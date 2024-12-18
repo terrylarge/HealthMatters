@@ -9,6 +9,8 @@ export function useHealthProfile() {
   const { data: profile, isLoading } = useQuery<HealthProfile | null>({
     queryKey: ['/api/health-profile'],
     staleTime: Infinity,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const mutation = useMutation({

@@ -40,14 +40,15 @@ export default function HealthProfilePage() {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      birthdate: profile?.birthdate || "",
-      sex: profile?.sex || "male",
-      heightFeet: profile?.heightFeet || 5,
-      heightInches: profile?.heightInches || 8,
-      weightPounds: profile?.weightPounds || 150,
-      medicalConditions: profile?.medicalConditions || [],
-      medications: profile?.medications || [],
+      birthdate: "",
+      sex: "male",
+      heightFeet: 5,
+      heightInches: 8,
+      weightPounds: 150,
+      medicalConditions: [],
+      medications: [],
     },
+    values: profile ?? undefined,
   });
 
   const onSubmit = async (data: ProfileFormData) => {
