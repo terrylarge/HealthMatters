@@ -1,4 +1,5 @@
 import { useHealthProfile } from "@/hooks/use-health-profile";
+import type { LabResult } from "@db/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -82,7 +83,7 @@ export default function LabResultsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {result.analysis && (
+            {result.analysis ? (
               <div className="space-y-8">
                 <div>
                   <h3 className="text-lg font-semibold mb-4">BMI Analysis</h3>
@@ -100,50 +101,54 @@ export default function LabResultsPage() {
                         <YAxis domain={[15, 35]} />
                         <Tooltip />
                         <Line type="monotone" dataKey="bmi" stroke="#8884d8" />
-                        <ReferenceLine
-                          y={result.analysis.bmi.score}
-                          stroke="red"
-                          label={`Your BMI: ${result.analysis.bmi.score.toFixed(
-                            1
-                          )}`}
-                        />
+                        {result.analysis.bmi && (
+                          <ReferenceLine
+                            y={result.analysis.bmi.score}
+                            stroke="red"
+                            label={`Your BMI: ${result.analysis.bmi.score.toFixed(1)}`}
+                          />
+                        )}
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Test Analysis</h3>
-                  <div className="space-y-4">
-                    {result.analysis.analysis.map((test, index) => (
-                      <div key={index} className="border p-4 rounded-lg">
-                        <h4 className="font-semibold">{test.testName}</h4>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {test.purpose}
-                        </p>
-                        <p className="mt-2">
-                          <span className="font-medium">Result:</span>{" "}
-                          {test.result}
-                        </p>
-                        <p className="mt-1">
-                          <span className="font-medium">Interpretation:</span>{" "}
-                          {test.interpretation}
-                        </p>
-                      </div>
-                    ))}
+                {result.analysis.analysis && result.analysis.analysis.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Test Analysis</h3>
+                    <div className="space-y-4">
+                      {result.analysis.analysis.map((test, index) => (
+                        <div key={index} className="border p-4 rounded-lg">
+                          <h4 className="font-semibold">{test.testName}</h4>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {test.purpose}
+                          </p>
+                          <p className="mt-2">
+                            <span className="font-medium">Result:</span>{" "}
+                            {test.result}
+                          </p>
+                          <p className="mt-1">
+                            <span className="font-medium">Interpretation:</span>{" "}
+                            {test.interpretation}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">
-                    Questions for Your Medical Team
-                  </h3>
-                  <ul className="list-disc pl-5 space-y-2">
-                    {result.analysis.questions.map((question, index) => (
-                      <li key={index}>{question}</li>
-                    ))}
-                  </ul>
-                </div>
+                {result.analysis.questions && result.analysis.questions.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">
+                      Questions for Your Medical Team
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-2">
+                      {result.analysis.questions.map((question, index) => (
+                        <li key={index}>{question}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 <div className="bg-muted p-4 rounded-lg text-sm">
                   <p className="font-medium mb-2">Medical Disclaimer</p>

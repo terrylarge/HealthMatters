@@ -7,7 +7,7 @@ export const users = pgTable("users", {
   username: text("username").unique().notNull(),
   password: text("password").notNull(),
   email: text("email").unique().notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const healthProfiles = pgTable("health_profiles", {
@@ -23,11 +23,26 @@ export const healthProfiles = pgTable("health_profiles", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export interface Analysis {
+  date: string;
+  bmi: {
+    score: number;
+    category: string;
+  };
+  analysis: Array<{
+    testName: string;
+    purpose: string;
+    result: string;
+    interpretation: string;
+  }>;
+  questions: string[];
+}
+
 export const labResults = pgTable("lab_results", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   pdfPath: text("pdf_path").notNull(),
-  analysis: jsonb("analysis"),
+  analysis: jsonb("analysis").$type<Analysis>(),
   uploadedAt: timestamp("uploaded_at").defaultNow(),
 });
 

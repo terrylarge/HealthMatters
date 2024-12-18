@@ -11,9 +11,19 @@ import { analyzePDFText, calculateBMI, getBMICategory } from "./openai";
 import { PDFExtract } from "pdf.js-extract";
 
 const pdfExtract = new PDFExtract();
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + '.pdf');
+  }
+});
+
 const upload = multer({
-  dest: "uploads/",
-  fileFilter: (_req, file, cb) => {
+  storage: storage,
+  fileFilter: (req, file, cb) => {
     if (file.mimetype !== "application/pdf") {
       cb(new Error("Only PDF files are allowed"));
       return;
@@ -37,7 +47,7 @@ export function registerRoutes(app: Express): Server {
     const [profile] = await db
       .select()
       .from(healthProfiles)
-      .where(eq(healthProfiles.userId, req.user.id))
+      .where(eq(healthProfiles.userId, req.user!.id))
       .limit(1);
 
     res.json(profile || null);
@@ -51,7 +61,7 @@ export function registerRoutes(app: Express): Server {
     const [existing] = await db
       .select()
       .from(healthProfiles)
-      .where(eq(healthProfiles.userId, req.user.id))
+      .where(eq(healthProfiles.userId, req.user!.id))
       .limit(1);
 
     if (existing) {
@@ -65,7 +75,7 @@ export function registerRoutes(app: Express): Server {
 
     const [profile] = await db
       .insert(healthProfiles)
-      .values({ ...req.body, userId: req.user.id })
+      .values({ ...req.body, userId: req.user!.id })
       .returning();
 
     res.json(profile);
@@ -81,42 +91,52 @@ export function registerRoutes(app: Express): Server {
       return res.status(400).send("No PDF file uploaded");
     }
 
+    let pdfPath = req.file.path;
+
     try {
-      const data = await pdfExtract.extract(req.file.path);
+      const data = await pdfExtract.extract(pdfPath);
       const text = data.pages.map(page => page.content).join(" ");
 
       const [profile] = await db
         .select()
         .from(healthProfiles)
-        .where(eq(healthProfiles.userId, req.user.id))
+        .where(eq(healthProfiles.userId, req.user!.id))
         .limit(1);
 
       if (!profile) {
-        return res.status(400).send("Please complete your health profile first");
+        throw new Error("Please complete your health profile first");
       }
 
       const bmi = calculateBMI(profile.weightPounds, profile.heightFeet, profile.heightInches);
       const analysis = await analyzePDFText(text, {
         ...profile,
         bmi,
-        bmiCategory: getBMICategory(bmi)
+        bmiCategory: getBMICategory(bmi),
+        medicalConditions: profile.medicalConditions || [],
+        medications: profile.medications || [],
       });
+
+      if (!analysis || typeof analysis !== 'object') {
+        throw new Error('Invalid analysis response from OpenAI');
+      }
 
       const [result] = await db
         .insert(labResults)
         .values({
-          userId: req.user.id,
-          pdfPath: req.file.path,
+          userId: req.user!.id,
+          pdfPath,
           analysis
         })
         .returning();
 
+      console.log('Lab result analysis:', JSON.stringify(analysis, null, 2));
       res.json(result);
     } catch (error) {
-      res.status(500).send("Error processing PDF: " + error.message);
+      const message = error instanceof Error ? error.message : "Unknown error occurred";
+      res.status(500).send(`Error processing PDF: ${message}`);
     } finally {
-      // Clean up uploaded file
-      await fs.unlink(req.file.path).catch(console.error);
+      // Clean up uploaded file after processing or in case of error
+      await fs.unlink(pdfPath).catch(console.error);
     }
   });
 
@@ -128,7 +148,7 @@ export function registerRoutes(app: Express): Server {
     const results = await db
       .select()
       .from(labResults)
-      .where(eq(labResults.userId, req.user.id))
+      .where(eq(labResults.userId, req.user!.id))
       .orderBy(labResults.uploadedAt);
 
     res.json(results);

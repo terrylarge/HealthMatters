@@ -50,7 +50,7 @@ export async function analyzePDFText(text: string, healthProfile: HealthProfileW
       messages: [
         {
           role: "system",
-          content: "You are a medical data analyst specializing in laboratory result interpretation. Provide analysis in a clear, structured format."
+          content: "You are a medical data analyst specializing in laboratory result interpretation. Provide analysis in a clear, structured format following the exact JSON schema provided."
         },
         {
           role: "user",
@@ -62,11 +62,23 @@ ${JSON.stringify(healthProfile, null, 2)}
 Lab Results:
 ${text}
 
-Provide a detailed analysis in JSON format with:
-1. Current date
-2. BMI calculation and category (use the provided BMI)
-3. Analysis of each test (name, purpose, result, interpretation)
-4. Relevant questions for medical professionals based on results and health profile`
+Return a JSON object with exactly this structure:
+{
+  "date": "YYYY-MM-DD",
+  "bmi": {
+    "score": number,
+    "category": string
+  },
+  "analysis": [
+    {
+      "testName": string,
+      "purpose": string,
+      "result": string,
+      "interpretation": string
+    }
+  ],
+  "questions": string[]
+}`
         }
       ],
       response_format: { type: "json_object" },
@@ -78,14 +90,26 @@ Provide a detailed analysis in JSON format with:
       throw new Error("No response content from OpenAI");
     }
 
-    const analysis: LabAnalysis = JSON.parse(response.choices[0].message.content);
-    return {
-      ...analysis,
-      bmi: {
+    let analysis: LabAnalysis;
+    try {
+      analysis = JSON.parse(response.choices[0].message.content);
+      
+      // Validate the structure
+      if (!analysis.date || !analysis.analysis || !Array.isArray(analysis.analysis) || !analysis.questions || !Array.isArray(analysis.questions)) {
+        throw new Error("Invalid response structure from OpenAI");
+      }
+
+      // Ensure BMI data is present
+      analysis.bmi = {
         score: healthProfile.bmi,
         category: healthProfile.bmiCategory
-      }
-    };
+      };
+
+      return analysis;
+    } catch (parseError) {
+      console.error("Failed to parse OpenAI response:", response.choices[0].message.content);
+      throw new Error("Invalid JSON response from OpenAI");
+    }
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to analyze lab results: ${error.message}`);

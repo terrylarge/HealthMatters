@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { HealthProfile, InsertHealthProfile } from "@db/schema";
+import type { HealthProfile, InsertHealthProfile, LabResult } from "@db/schema";
 import { useToast } from '@/hooks/use-toast';
 
 export function useHealthProfile() {
@@ -75,7 +75,7 @@ export function useHealthProfile() {
     },
   });
 
-  const { data: labResults = [] } = useQuery({
+  const { data: labResults = [] } = useQuery<LabResult[]>({
     queryKey: ['/api/lab-results'],
     enabled: !!profile,
   });
