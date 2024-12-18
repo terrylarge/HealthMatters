@@ -5,7 +5,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { users, insertUserSchema, type User } from "@db/schema";
+import { users, insertUserSchema, type User, type SelectUser } from "@db/schema";
 import { db } from "@db";
 import { eq } from "drizzle-orm";
 
@@ -30,7 +30,7 @@ const crypto = {
 
 declare global {
   namespace Express {
-    interface User extends User { }
+    interface User extends SelectUser { }
   }
 }
 
@@ -58,28 +58,31 @@ export function setupAuth(app: Express) {
   app.use(passport.session());
 
   passport.use(
-    new LocalStrategy({
-      usernameField: 'email',
-    }, async (email, password, done) => {
-      try {
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, email))
-          .limit(1);
+    new LocalStrategy(
+      {
+        usernameField: 'email',
+      },
+      async (email, password, done) => {
+        try {
+          const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, email))
+            .limit(1);
 
-        if (!user) {
-          return done(null, false, { message: "Email not found." });
+          if (!user) {
+            return done(null, false, { message: "Email not found." });
+          }
+          const isMatch = await crypto.compare(password, user.password);
+          if (!isMatch) {
+            return done(null, false, { message: "Incorrect password." });
+          }
+          return done(null, user);
+        } catch (err) {
+          return done(err);
         }
-        const isMatch = await crypto.compare(password, user.password);
-        if (!isMatch) {
-          return done(null, false, { message: "Incorrect password." });
-        }
-        return done(null, user);
-      } catch (err) {
-        return done(err);
       }
-    })
+    )
   );
 
   passport.serializeUser((user, done) => {

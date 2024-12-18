@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { InsertUser, User } from "@db/schema";
+import type { InsertUser, SelectUser } from "@db/schema";
 import { useToast } from '@/hooks/use-toast';
 
 type RequestResult = {
   ok: true;
-  user?: User;
+  user?: SelectUser;
 } | {
   ok: false;
   message: string;
