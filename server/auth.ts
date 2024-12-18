@@ -140,7 +140,7 @@ export function setupAuth(app: Express) {
         }
         return res.json({
           message: "Registration successful",
-          user: { id: newUser.id, email: newUser.email, username: newUser.username },
+          user: { id: newUser.id, email: newUser.email },
         });
       });
     } catch (error) {

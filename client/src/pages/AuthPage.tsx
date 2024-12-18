@@ -17,9 +17,15 @@ import {
 } from "@/components/ui/form";
 
 const authSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  username: z.string().min(3).optional(),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().optional(),
+}).refine((data) => {
+  if (!data.confirmPassword) return true;
+  return data.password === data.confirmPassword;
+}, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 type AuthFormData = z.infer<typeof authSchema>;
@@ -86,13 +92,14 @@ export default function AuthPage() {
               {isRegister && (
                 <FormField
                   control={form.control}
-                  name="username"
+                  name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Choose a username"
+                          type="password"
+                          placeholder="Confirm your password"
                           {...field}
                         />
                       </FormControl>
