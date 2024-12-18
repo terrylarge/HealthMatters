@@ -108,10 +108,10 @@ export function setupAuth(app: Express) {
       if (!result.success) {
         return res
           .status(400)
-          .send("Invalid input: " + result.error.issues.map(i => i.message).join(", "));
+          .json({ message: "Invalid input: " + result.error.issues.map(i => i.message).join(", ") });
       }
 
-      const { email, password, username } = result.data;
+      const { email, password } = result.data;
 
       const [existingUser] = await db
         .select()
@@ -120,7 +120,7 @@ export function setupAuth(app: Express) {
         .limit(1);
 
       if (existingUser) {
-        return res.status(400).send("Email already registered");
+        return res.status(400).json({ message: "Email already registered" });
       }
 
       const hashedPassword = await crypto.hash(password);
@@ -129,22 +129,28 @@ export function setupAuth(app: Express) {
         .insert(users)
         .values({
           email,
-          username,
           password: hashedPassword,
         })
         .returning();
 
-      req.login(newUser, (err) => {
-        if (err) {
-          return next(err);
-        }
-        return res.json({
-          message: "Registration successful",
-          user: { id: newUser.id, email: newUser.email },
+      // Use a Promise to handle login callback
+      await new Promise<void>((resolve, reject) => {
+        req.login(newUser, (err) => {
+          if (err) reject(err);
+          else resolve();
         });
       });
+
+      return res.json({
+        message: "Registration successful",
+        user: { id: newUser.id, email: newUser.email },
+      });
     } catch (error) {
-      next(error);
+      console.error('Registration error:', error);
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      }
+      return res.status(500).json({ message: "Registration failed" });
     }
   });
 
