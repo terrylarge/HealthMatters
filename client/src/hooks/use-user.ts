@@ -39,19 +39,24 @@ async function handleRequest(
   }
 }
 
-async function fetchUser(): Promise<User | null> {
-  const response = await fetch('/api/user', {
-    credentials: 'include'
-  });
+async function fetchUser(): Promise<SelectUser | null> {
+  try {
+    const response = await fetch('/api/user', {
+      credentials: 'include'
+    });
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      return null;
+    if (!response.ok) {
+      if (response.status === 401) {
+        return null;
+      }
+      throw new Error(`${response.status}: ${await response.text()}`);
     }
-    throw new Error(`${response.status}: ${await response.text()}`);
-  }
 
-  return response.json();
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw error;
+  }
 }
 
 export function useUser() {

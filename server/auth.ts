@@ -148,34 +148,41 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", (req, res, next) => {
-    const result = insertUserSchema.safeParse(req.body);
-    if (!result.success) {
-      return res
-        .status(400)
-        .send("Invalid input: " + result.error.issues.map(i => i.message).join(", "));
-    }
-
-    passport.authenticate("local", (err: any, user: Express.User, info: IVerifyOptions) => {
-      if (err) {
-        return next(err);
+  app.post("/api/login", async (req, res, next) => {
+    try {
+      const result = insertUserSchema.safeParse(req.body);
+      if (!result.success) {
+        return res
+          .status(400)
+          .json({ message: "Invalid input: " + result.error.issues.map(i => i.message).join(", ") });
       }
 
-      if (!user) {
-        return res.status(400).send(info.message ?? "Login failed");
-      }
-
-      req.logIn(user, (err) => {
+      passport.authenticate("local", (err: any, user: Express.User, info: IVerifyOptions) => {
         if (err) {
+          console.error('Login error:', err);
           return next(err);
         }
 
-        return res.json({
-          message: "Login successful",
-          user: { id: user.id, email: user.email, username: user.username },
+        if (!user) {
+          return res.status(400).json({ message: info.message ?? "Login failed" });
+        }
+
+        req.logIn(user, (err) => {
+          if (err) {
+            console.error('Login session error:', err);
+            return next(err);
+          }
+
+          return res.json({
+            message: "Login successful",
+            user: { id: user.id, email: user.email, username: user.username },
+          });
         });
-      });
-    })(req, res, next);
+      })(req, res, next);
+    } catch (error) {
+      console.error('Login route error:', error);
+      next(error);
+    }
   });
 
   app.post("/api/logout", (req, res) => {

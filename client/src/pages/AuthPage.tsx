@@ -38,10 +38,19 @@ export default function AuthPage() {
   });
 
   const onSubmit = async (data: AuthFormData) => {
-    if (isRegister) {
-      await register(data);
-    } else {
-      await login(data);
+    try {
+      if (isRegister) {
+        await register(data);
+      } else {
+        await login(data);
+      }
+    } catch (error) {
+      console.error('Auth error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Authentication failed"
+      });
     }
   };
 
