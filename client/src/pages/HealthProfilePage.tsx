@@ -23,13 +23,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, X } from "lucide-react";
 
 const profileSchema = z.object({
-  birthdate: z.string(),
-  sex: z.enum(["male", "female"]),
-  heightFeet: z.number().min(1).max(8),
-  heightInches: z.number().min(0).max(11),
-  weightPounds: z.number().min(1).max(1000),
-  medicalConditions: z.array(z.string()),
-  medications: z.array(z.string()),
+  birthdate: z.string().min(1, "Birthdate is required"),
+  sex: z.enum(["male", "female"], {
+    required_error: "Please select your sex",
+  }),
+  heightFeet: z.number({
+    required_error: "Height (feet) is required",
+    invalid_type_error: "Height must be a number",
+  }).min(1, "Height must be at least 1 foot").max(8, "Height cannot exceed 8 feet"),
+  heightInches: z.number({
+    required_error: "Height (inches) is required",
+    invalid_type_error: "Height must be a number",
+  }).min(0, "Inches must be between 0 and 11").max(11, "Inches must be between 0 and 11"),
+  weightPounds: z.number({
+    required_error: "Weight is required",
+    invalid_type_error: "Weight must be a number",
+  }).min(1, "Weight must be at least 1 pound").max(1000, "Weight cannot exceed 1000 pounds"),
+  medicalConditions: z.array(z.string()).default([]),
+  medications: z.array(z.string()).default([]),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -41,10 +52,10 @@ export default function HealthProfilePage() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       birthdate: "",
-      sex: "male",
-      heightFeet: 5,
-      heightInches: 8,
-      weightPounds: 150,
+      sex: undefined,
+      heightFeet: undefined,
+      heightInches: undefined,
+      weightPounds: undefined,
       medicalConditions: [],
       medications: [],
     },
