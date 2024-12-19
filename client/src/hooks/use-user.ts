@@ -121,6 +121,23 @@ export function useUser() {
     },
   });
 
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await fetch('/api/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      return response.json();
+    },
+  });
+
   return {
     user,
     isLoading,
@@ -128,5 +145,6 @@ export function useUser() {
     login: loginMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
     register: registerMutation.mutateAsync,
+    resetPassword: resetPasswordMutation.mutateAsync,
   };
 }

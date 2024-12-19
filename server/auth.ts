@@ -206,4 +206,37 @@ export function setupAuth(app: Express) {
     }
     res.status(401).send("Not logged in");
   });
+
+  app.post("/api/reset-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      // For security reasons, always return success even if the email doesn't exist
+      res.json({ 
+        message: "If an account exists with that email, you will receive password reset instructions."
+      });
+
+      // Only proceed with sending email if user exists
+      if (user) {
+        // TODO: Implement email sending functionality
+        // For now, we'll just log the reset request
+        console.log(`Password reset requested for email: ${email}`);
+      }
+    } catch (error) {
+      console.error('Password reset error:', error);
+      // Don't expose internal errors
+      res.status(500).json({ 
+        message: "An error occurred while processing your request"
+      });
+    }
+  });
 }

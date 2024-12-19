@@ -8,6 +8,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Form,
   FormControl,
   FormField,
@@ -15,6 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
 
 const authSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -32,7 +41,9 @@ type AuthFormData = z.infer<typeof authSchema>;
 
 export default function AuthPage() {
   const [isRegister, setIsRegister] = useState(false);
-  const { login, register } = useUser();
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const { login, register, resetPassword } = useUser();
+  const { toast } = useToast();
 
   const form = useForm<AuthFormData>({
     resolver: zodResolver(authSchema),
@@ -59,6 +70,25 @@ export default function AuthPage() {
       });
     }
   };
+
+  const onResetPassword = async (data: { email: string }) => {
+    try {
+      await resetPassword(data.email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Check your email for a link to reset your password."
+      })
+      setResetDialogOpen(false);
+    } catch (error) {
+      console.error('Password reset error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Password reset failed"
+      });
+    }
+  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -133,7 +163,7 @@ export default function AuthPage() {
             </form>
           </Form>
 
-          <div className="mt-4 text-center">
+          <div className="flex flex-col gap-2">
             <Button
               variant="link"
               onClick={() => setIsRegister(!isRegister)}
@@ -143,6 +173,47 @@ export default function AuthPage() {
                 ? "Already have an account? Login"
                 : "Don't have an account? Register"}
             </Button>
+            {!isRegister && (
+              <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="link" className="text-primary">
+                    Forgot Password?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Reset Password</DialogTitle>
+                    <DialogDescription>
+                      Enter your email address and we'll send you a link to reset your password.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onResetPassword)} className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="email"
+                                placeholder="Enter your email"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" className="w-full">
+                        Send Reset Link
+                      </Button>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </CardContent>
       </Card>
