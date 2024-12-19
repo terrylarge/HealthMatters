@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, X } from "lucide-react";
+import { useLocation } from "wouter";
 
 const profileSchema = z.object({
   birthdate: z.string().min(1, "Birthdate is required"),
@@ -47,6 +48,7 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function HealthProfilePage() {
   const { profile, isLoading, updateProfile } = useHealthProfile();
+  const [, navigate] = useLocation();
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -64,6 +66,7 @@ export default function HealthProfilePage() {
 
   const onSubmit = async (data: ProfileFormData) => {
     await updateProfile(data);
+    navigate("/lab-results");
   };
 
   if (isLoading) {
@@ -265,7 +268,7 @@ export default function HealthProfilePage() {
             />
 
             <Button type="submit" className="w-full">
-              Save Profile
+              Save and Continue
             </Button>
           </form>
         </Form>

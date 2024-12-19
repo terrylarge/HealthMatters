@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -75,7 +75,7 @@ export default function LabResultsPage() {
         </CardContent>
       </Card>
 
-      {labResults.map((result) => (
+      {labResults.map((result: LabResult) => (
         <Card key={result.id}>
           <CardHeader>
             <CardTitle>
@@ -83,7 +83,7 @@ export default function LabResultsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {result.analysis ? (
+            {result.analysis && (
               <div className="space-y-8">
                 <div>
                   <h3 className="text-lg font-semibold mb-4">BMI Analysis</h3>

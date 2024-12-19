@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, Loader2 } from "lucide-react";
 import AuthPage from "./pages/AuthPage";
 import HealthProfilePage from "./pages/HealthProfilePage";
+import LabResultsPage from "./pages/LabResultsPage";
 import { useUser } from "./hooks/use-user";
 import { Button } from "./components/ui/button";
 
@@ -35,6 +36,7 @@ function App() {
       <main className="container mx-auto px-4 py-8">
         <Switch>
           <Route path="/" component={HealthProfilePage} />
+          <Route path="/lab-results" component={LabResultsPage} />
           <Route>
             <Card>
               <CardContent className="pt-6">

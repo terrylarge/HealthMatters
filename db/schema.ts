@@ -22,6 +22,27 @@ export const healthProfiles = pgTable("health_profiles", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const labResults = pgTable("lab_results", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
+  pdfPath: text("pdf_path").notNull(),
+  analysis: jsonb("analysis").$type<{
+    date: string;
+    bmi: {
+      score: number;
+      category: string;
+    };
+    analysis: Array<{
+      testName: string;
+      purpose: string;
+      result: string;
+      interpretation: string;
+    }>;
+    questions: string[];
+  }>(),
+});
+
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
 
@@ -31,8 +52,13 @@ export const insertHealthProfileSchema = createInsertSchema(healthProfiles, {
 });
 export const selectHealthProfileSchema = createSelectSchema(healthProfiles);
 
+export const insertLabResultSchema = createInsertSchema(labResults);
+export const selectLabResultSchema = createSelectSchema(labResults);
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = User;
 export type HealthProfile = typeof healthProfiles.$inferSelect;
 export type InsertHealthProfile = typeof healthProfiles.$inferInsert;
+export type LabResult = typeof labResults.$inferSelect;
+export type InsertLabResult = typeof labResults.$inferInsert;
