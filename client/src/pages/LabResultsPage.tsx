@@ -208,7 +208,17 @@ export default function LabResultsPage() {
                           type="number"
                           domain={[15, 35]}
                           ticks={[16, 18.5, 25, 30]}
-                          tickFormatter={(value) => value.toString()}
+                          tickFormatter={(value) => {
+                            const categories = {
+                              16: "Underweight",
+                              18.5: "Normal",
+                              25: "Overweight",
+                              30: "Obese"
+                            };
+                            return categories[value] || value.toString();
+                          }}
+                          tick={{ dy: 10 }}
+                          interval={0}
                         />
                         <YAxis 
                           hide={true}
