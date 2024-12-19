@@ -209,11 +209,11 @@ export default function LabResultsPage() {
                           domain={[15, 35]}
                           ticks={[16, 18.5, 25, 30]}
                           tickFormatter={(value) => value.toString()}
-                        >
-                          <Label position="bottom" offset={0}>
-                            BMI Scale
-                          </Label>
-                        </XAxis>
+                        />
+                        <YAxis 
+                          hide={true}
+                          domain={[0, 1]}
+                        />
                         <Tooltip
                           content={({ active, payload }) => {
                             if (active && payload && payload.length) {
