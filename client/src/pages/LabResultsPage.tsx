@@ -217,8 +217,13 @@ export default function LabResultsPage() {
                             };
                             return categories[value] || value.toString();
                           }}
-                          tick={{ dy: 10 }}
+                          tick={{ 
+                            dy: 10,
+                            fontSize: 11,
+                            fill: "rgb(100, 116, 139)"
+                          }}
                           interval={0}
+                          height={30}
                         />
                         <YAxis 
                           hide={true}
