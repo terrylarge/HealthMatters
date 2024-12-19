@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, Download } from "lucide-react";
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import {
   LineChart,
   Line,
@@ -14,6 +15,100 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
+
+// Define styles for PDF document
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+    padding: 30,
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  heading: {
+    fontSize: 18,
+    marginBottom: 10,
+    marginTop: 20,
+  },
+  text: {
+    fontSize: 12,
+    marginBottom: 5,
+  },
+  testResult: {
+    marginVertical: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 4,
+  },
+  disclaimer: {
+    marginTop: 30,
+    padding: 10,
+    backgroundColor: '#f3f4f6',
+  },
+});
+
+// PDF Document Component
+const AnalysisPDF = ({ result }: { result: LabResult }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.section}>
+        <Text style={styles.title}>
+          Analysis Results - {new Date(result.uploadedAt).toLocaleDateString()}
+        </Text>
+
+        {result.analysis && (
+          <>
+            <View style={styles.section}>
+              <Text style={styles.heading}>BMI Analysis</Text>
+              <Text style={styles.text}>
+                Your BMI: {result.analysis.bmi.score.toFixed(1)} ({result.analysis.bmi.category})
+              </Text>
+            </View>
+
+            {result.analysis.analysis && (
+              <View style={styles.section}>
+                <Text style={styles.heading}>Test Analysis</Text>
+                {result.analysis.analysis.map((test, index) => (
+                  <View key={index} style={styles.testResult}>
+                    <Text style={styles.text}>{test.testName}</Text>
+                    <Text style={styles.text}>Purpose: {test.purpose}</Text>
+                    <Text style={styles.text}>Result: {test.result}</Text>
+                    <Text style={styles.text}>Interpretation: {test.interpretation}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {result.analysis.questions && (
+              <View style={styles.section}>
+                <Text style={styles.heading}>Questions for Your Medical Team</Text>
+                {result.analysis.questions.map((question, index) => (
+                  <Text key={index} style={styles.text}>
+                    • {question}
+                  </Text>
+                ))}
+              </View>
+            )}
+
+            <View style={styles.disclaimer}>
+              <Text style={styles.heading}>Medical Disclaimer</Text>
+              <Text style={styles.text}>
+                This analysis is provided for informational purposes only and should not be considered medical advice. Please consult with your healthcare providers regarding your specific medical condition and treatment options. Your healthcare providers should be your primary source of medical information and advice.
+              </Text>
+            </View>
+          </>
+        )}
+      </View>
+    </Page>
+  </Document>
+);
 
 export default function LabResultsPage() {
   const { profile, isLoading, uploadLabResults, isUploading, labResults } = useHealthProfile();
@@ -77,10 +172,21 @@ export default function LabResultsPage() {
 
       {labResults.map((result: LabResult) => (
         <Card key={result.id}>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
               Analysis Results - {new Date(result.uploadedAt).toLocaleDateString()}
             </CardTitle>
+            <PDFDownloadLink
+              document={<AnalysisPDF result={result} />}
+              fileName={`lab-analysis-${new Date(result.uploadedAt).toISOString().split('T')[0]}.pdf`}
+            >
+              {({ loading }) => (
+                <Button variant="outline" disabled={loading}>
+                  <Download className="h-4 w-4 mr-2" />
+                  {loading ? "Preparing..." : "Download PDF"}
+                </Button>
+              )}
+            </PDFDownloadLink>
           </CardHeader>
           <CardContent>
             {result.analysis && (
