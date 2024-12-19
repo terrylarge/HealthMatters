@@ -193,27 +193,56 @@ export default function LabResultsPage() {
               <div className="space-y-8">
                 <div>
                   <h3 className="text-lg font-semibold mb-4">BMI Analysis</h3>
-                  <div className="h-[200px] w-full">
+                  <div className="h-[120px] w-full">
                     <ResponsiveContainer>
                       <LineChart
                         data={[
-                          { bmi: 16, label: "Underweight" },
-                          { bmi: 18.5, label: "Normal" },
-                          { bmi: 25, label: "Overweight" },
-                          { bmi: 30, label: "Obese" },
+                          { bmi: 16, category: "Underweight", range: "<18.5" },
+                          { bmi: 18.5, category: "Normal", range: "18.5-24.9" },
+                          { bmi: 25, category: "Overweight", range: "25-29.9" },
+                          { bmi: 30, category: "Obese", range: "≥30" },
                         ]}
+                        margin={{ top: 20, right: 30, left: 30, bottom: 5 }}
                       >
-                        <XAxis dataKey="label" />
-                        <YAxis domain={[15, 35]} />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="bmi" stroke="#8884d8" />
+                        <XAxis
+                          type="number"
+                          domain={[15, 35]}
+                          ticks={[16, 18.5, 25, 30]}
+                          tickFormatter={(value) => value.toString()}
+                        >
+                          <Label position="bottom" offset={0}>
+                            BMI Scale
+                          </Label>
+                        </XAxis>
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-background border p-2 rounded-lg shadow-lg">
+                                  <p className="font-medium">{data.category}</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    BMI Range: {data.range}
+                                  </p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
                         {result.analysis.bmi && (
                           <ReferenceLine
-                            y={result.analysis.bmi.score}
+                            x={result.analysis.bmi.score}
                             stroke="red"
-                            label={`Your BMI: ${result.analysis.bmi.score.toFixed(1)}`}
+                            label={{
+                              value: `Your BMI: ${result.analysis.bmi.score.toFixed(1)}`,
+                              position: 'top',
+                            }}
                           />
                         )}
+                        <ReferenceLine x={18.5} stroke="#888" strokeDasharray="3 3" />
+                        <ReferenceLine x={25} stroke="#888" strokeDasharray="3 3" />
+                        <ReferenceLine x={30} stroke="#888" strokeDasharray="3 3" />
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
