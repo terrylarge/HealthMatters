@@ -207,13 +207,13 @@ export default function LabResultsPage() {
                         <XAxis
                           type="number"
                           domain={[15, 35]}
-                          ticks={[16, 18.5, 25, 30]}
+                          ticks={[17, 21.7, 27.5, 32.5]}
                           tickFormatter={(value) => {
                             const categories = {
-                              16: "Underweight",
-                              18.5: "Normal",
-                              25: "Overweight",
-                              30: "Obese"
+                              17: "Underweight",
+                              21.7: "Normal",
+                              27.5: "Overweight",
+                              32.5: "Obese"
                             };
                             return categories[value] || value.toString();
                           }}
