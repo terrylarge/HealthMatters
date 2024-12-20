@@ -4,6 +4,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import AuthPage from "./pages/AuthPage";
 import HealthProfilePage from "./pages/HealthProfilePage";
 import LabResultsPage from "./pages/LabResultsPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { useUser } from "./hooks/use-user";
 import { Button } from "./components/ui/button";
 
@@ -37,6 +38,7 @@ function App() {
         <Switch>
           <Route path="/" component={HealthProfilePage} />
           <Route path="/lab-results" component={LabResultsPage} />
+          <Route path="/reset-password" component={ResetPasswordPage} />
           <Route>
             <Card>
               <CardContent className="pt-6">
