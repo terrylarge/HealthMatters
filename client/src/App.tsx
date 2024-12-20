@@ -19,6 +19,11 @@ function App() {
     );
   }
 
+  // Public routes that don't require authentication
+  if (window.location.pathname === '/reset-password') {
+    return <ResetPasswordPage />;
+  }
+
   if (!user) {
     return <AuthPage />;
   }
@@ -38,7 +43,6 @@ function App() {
         <Switch>
           <Route path="/" component={HealthProfilePage} />
           <Route path="/lab-results" component={LabResultsPage} />
-          <Route path="/reset-password" component={ResetPasswordPage} />
           <Route>
             <Card>
               <CardContent className="pt-6">
