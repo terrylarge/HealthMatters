@@ -71,13 +71,15 @@ export default function AuthPage() {
     }
   };
 
+  const [isResetting, setIsResetting] = useState(false);
   const onResetPassword = async (data: { email: string }) => {
     try {
+      setIsResetting(true);
       await resetPassword(data.email);
       toast({
         title: "Password Reset Email Sent",
         description: "Check your email for a link to reset your password."
-      })
+      });
       setResetDialogOpen(false);
     } catch (error) {
       console.error('Password reset error:', error);
@@ -86,6 +88,8 @@ export default function AuthPage() {
         title: "Error",
         description: error instanceof Error ? error.message : "Password reset failed"
       });
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -206,8 +210,19 @@ export default function AuthPage() {
                           </FormItem>
                         )}
                       />
-                      <Button type="submit" className="w-full">
-                        Send Reset Link
+                      <Button 
+                        type="submit" 
+                        className="w-full"
+                        disabled={isResetting}
+                      >
+                        {isResetting ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          "Send Reset Link"
+                        )}
                       </Button>
                     </form>
                   </Form>
