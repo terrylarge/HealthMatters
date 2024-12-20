@@ -2,6 +2,10 @@ import passport from "passport";
 import { IVerifyOptions, Strategy as LocalStrategy } from "passport-local";
 import { type Express } from "express";
 import session from "express-session";
+import { randomUUID } from "crypto";
+import { sendPasswordResetEmail } from "./email";
+import { passwordResetTokens } from "@db/schema";
+import { and, eq, gt } from "drizzle-orm";
 import createMemoryStore from "memorystore";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
@@ -227,15 +231,72 @@ export function setupAuth(app: Express) {
 
       // Only proceed with sending email if user exists
       if (user) {
-        // TODO: Implement email sending functionality
-        // For now, we'll just log the reset request
-        console.log(`Password reset requested for email: ${email}`);
+        const token = randomUUID();
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+        // Save the reset token
+        await db.insert(passwordResetTokens).values({
+          userId: user.id,
+          token,
+          expiresAt,
+        });
+
+        // Send the reset email
+        await sendPasswordResetEmail(email, token);
       }
     } catch (error) {
       console.error('Password reset error:', error);
       // Don't expose internal errors
       res.status(500).json({ 
         message: "An error occurred while processing your request"
+      });
+    }
+  });
+
+  app.post("/api/reset-password/verify", async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required" });
+      }
+
+      // Find valid token
+      const [resetToken] = await db
+        .select()
+        .from(passwordResetTokens)
+        .where(
+          and(
+            eq(passwordResetTokens.token, token),
+            eq(passwordResetTokens.used, false),
+            gt(passwordResetTokens.expiresAt, new Date())
+          )
+        )
+        .limit(1);
+
+      if (!resetToken) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      // Hash the new password
+      const hashedPassword = await crypto.hash(newPassword);
+
+      // Update the user's password
+      await db
+        .update(users)
+        .set({ password: hashedPassword })
+        .where(eq(users.id, resetToken.userId));
+
+      // Mark the token as used
+      await db
+        .update(passwordResetTokens)
+        .set({ used: true })
+        .where(eq(passwordResetTokens.id, resetToken.id));
+
+      res.json({ message: "Password has been reset successfully" });
+    } catch (error) {
+      console.error('Password reset verification error:', error);
+      res.status(500).json({ 
+        message: "An error occurred while resetting your password"
       });
     }
   });
