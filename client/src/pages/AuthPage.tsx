@@ -73,6 +73,15 @@ export default function AuthPage() {
   };
 
   const [isResetting, setIsResetting] = useState(false);
+  const resetForm = useForm<{ email: string }>({
+    resolver: zodResolver(z.object({
+      email: z.string().email("Invalid email address"),
+    })),
+    defaultValues: {
+      email: "",
+    },
+  });
+
   const onResetPassword = async (data: { email: string }) => {
     try {
       setIsResetting(true);
@@ -192,10 +201,10 @@ export default function AuthPage() {
                       Enter your email address and we'll send you a link to reset your password.
                     </DialogDescription>
                   </DialogHeader>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onResetPassword)} className="space-y-4">
+                  <Form {...resetForm}>
+                    <form onSubmit={resetForm.handleSubmit(onResetPassword)} className="space-y-4">
                       <FormField
-                        control={form.control}
+                        control={resetForm.control}
                         name="email"
                         render={({ field }) => (
                           <FormItem>
