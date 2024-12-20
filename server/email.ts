@@ -44,9 +44,8 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
   try {
     console.log(`Attempting to send password reset email to: ${email}`);
     
-    const resetLink = `${process.env.NODE_ENV === 'production' 
-      ? 'https://' 
-      : 'http://'}${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/reset-password?token=${resetToken}`;
+    // In development, use localhost:5000
+    const resetLink = `http://localhost:5000/reset-password?token=${resetToken}`;
 
     const mailOptions = {
       from: {
