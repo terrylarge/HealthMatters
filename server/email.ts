@@ -45,9 +45,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
     console.log(`Attempting to send password reset email to: ${email}`);
     
     // Use the Replit domain for the reset link
-    const resetLink = process.env.REPL_SLUG && process.env.REPL_OWNER
-      ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/reset-password?token=${resetToken}`
-      : `http://localhost:5000/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.REPL_SLUG ? `https://${process.env.REPL_SLUG}` : 'http://localhost:5000'}/reset-password?token=${resetToken}`;
 
     const mailOptions = {
       from: {
