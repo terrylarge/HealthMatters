@@ -51,7 +51,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
     const mailOptions = {
       from: {
         name: 'Health Matters at Large',
-        address: process.env.SMTP_USER!
+        address: 'cacbilling@sjcbar.org'
       },
       to: email,
       subject: "Password Reset - Health Matters at Large",
