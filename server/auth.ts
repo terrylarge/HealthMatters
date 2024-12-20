@@ -246,10 +246,12 @@ export function setupAuth(app: Express) {
       }
     } catch (error) {
       console.error('Password reset error:', error);
-      // Don't expose internal errors
-      res.status(500).json({ 
-        message: "An error occurred while processing your request"
-      });
+      // Only send response if one hasn't been sent yet
+      if (!res.headersSent) {
+        res.status(500).json({ 
+          message: "An error occurred while processing your request"
+        });
+      }
     }
   });
 
