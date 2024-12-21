@@ -9,6 +9,10 @@ import path from "path";
 import fs from "fs/promises";
 import { analyzePDFText, type HealthProfileWithBMI, calculateBMI, getBMICategory } from "./openai";
 import { PDFExtract } from "pdf.js-extract";
+import {randomUUID} from 'crypto';
+import { sendPasswordResetEmail } from './email';
+import { users, passwordResetTokens } from "@db/schema";
+
 
 const pdfExtract = new PDFExtract();
 const upload = multer({
@@ -147,6 +151,51 @@ export function registerRoutes(app: Express): Server {
       return res.status(500).json({ message: "Failed to process lab results" });
     }
   });
+
+  app.post('/api/reset-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      // For security reasons, always return success even if the email doesn't exist
+      res.json({ 
+        message: "If an account exists with that email, you will receive password reset instructions."
+      });
+
+      // Only proceed with sending email if user exists
+      if (user) {
+        const token = randomUUID();
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+        // Save the reset token
+        await db.insert(passwordResetTokens).values({
+          userId: user.id,
+          token,
+          expiresAt,
+        });
+
+        // Send the reset email
+        await sendPasswordResetEmail(email, token);
+      }
+    } catch (error) {
+      console.error('Password reset error:', error);
+      // Only send response if one hasn't been sent yet
+      if (!res.headersSent) {
+        res.status(500).json({ 
+          message: "An error occurred while processing your request"
+        });
+      }
+    }
+  });
+
 
   const httpServer = createServer(app);
   return httpServer;

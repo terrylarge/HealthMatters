@@ -88,15 +88,16 @@ export default function AuthPage() {
       await resetPassword(data.email);
       toast({
         title: "Password Reset Email Sent",
-        description: "Check your email for a link to reset your password."
+        description: "If an account exists with that email, you will receive password reset instructions."
       });
       setResetDialogOpen(false);
+      resetForm.reset();
     } catch (error) {
       console.error('Password reset error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : "Password reset failed"
+        description: "Unable to process password reset request. Please try again later."
       });
     } finally {
       setIsResetting(false);
