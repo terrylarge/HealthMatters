@@ -53,6 +53,12 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
     }
     console.log('Generated reset link:', resetLink); // Add logging for debugging
 
+    // Encode the token for URL safety
+    const safeToken = encodeURIComponent(resetToken);
+    const encodedResetLink = resetLink.replace(resetToken, safeToken);
+    
+    console.log('Final encoded reset link:', encodedResetLink); // Debug log
+
     const mailOptions = {
       from: {
         name: 'Health Matters at Large',
@@ -60,25 +66,28 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
       },
       to: email,
       subject: "Password Reset - Health Matters at Large",
+      text: `
+Reset your password for Health Matters at Large
+
+You requested to reset your password. Click or copy the following link to reset your password:
+
+${encodedResetLink}
+
+If you didn't request this, please ignore this email.
+This link will expire in 1 hour for security reasons.
+      `,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #2563eb; text-align: center;">Password Reset Request</h1>
           <p>You requested to reset your password for Health Matters at Large.</p>
-          <p>Click the button below to reset your password:</p>
-          <div style="text-align: center; margin: 20px 0;">
-            <a href="${resetLink}" 
-               style="background-color: #2563eb; color: white; padding: 12px 24px; 
-                      text-decoration: none; border-radius: 4px; display: inline-block;">
-              Reset Password
+          <p>Click the link below to reset your password:</p>
+          <p style="margin: 20px 0; word-break: break-all;">
+            <a href="${encodedResetLink}" style="color: #2563eb;">
+              ${encodedResetLink}
             </a>
-          </div>
+          </p>
           <p style="color: #666; font-size: 14px;">If you didn't request this, please ignore this email.</p>
           <p style="color: #666; font-size: 14px;">This link will expire in 1 hour for security reasons.</p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-          <p style="color: #888; font-size: 12px; text-align: center;">
-            If the button doesn't work, copy and paste this link into your browser:<br>
-            <span style="color: #2563eb;">${resetLink}</span>
-          </p>
         </div>
       `,
     };
