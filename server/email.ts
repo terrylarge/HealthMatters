@@ -44,8 +44,14 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
   try {
     console.log(`Attempting to send password reset email to: ${email}`);
     
-    // Use the Replit domain for the reset link
-    const resetLink = process.env.REPL_ID ? `https://${process.env.REPL_ID}.id.repl.co/reset-password?token=${resetToken}` : `http://localhost:5000/reset-password?token=${resetToken}`;
+    // Get the correct Replit URL for the deployment
+    let resetLink = `http://localhost:5000/reset-password?token=${resetToken}`;
+    if (process.env.REPLIT_DB_URL) {
+      // Extract the hostname from REPLIT_DB_URL which contains the correct domain
+      const url = new URL(process.env.REPLIT_DB_URL);
+      const replitDomain = url.hostname.replace('redis', '').slice(1); // Remove redis. prefix
+      resetLink = `https://${replitDomain}/reset-password?token=${resetToken}`;
+    }
 
     const mailOptions = {
       from: {
