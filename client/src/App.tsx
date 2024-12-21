@@ -19,11 +19,22 @@ function App() {
     );
   }
 
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-border" />
+      </div>
+    );
+  }
+
   // Public routes that don't require authentication
-  if (window.location.pathname === '/reset-password') {
+  const currentPath = window.location.pathname;
+  if (currentPath.startsWith('/reset-password')) {
     return <ResetPasswordPage />;
   }
 
+  // Protected routes require authentication
   if (!user) {
     return <AuthPage />;
   }

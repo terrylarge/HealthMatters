@@ -1,5 +1,5 @@
 import { useLocation, useLocation as useNavigate } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,10 +28,22 @@ const resetSchema = z.object({
 type ResetFormData = z.infer<typeof resetSchema>;
 
 export default function ResetPasswordPage() {
-  const [, params] = useLocation();
-  const [, navigate] = useNavigate();
+  const [, navigate] = useLocation();
   const { toast } = useToast();
   const [isResetting, setIsResetting] = useState(false);
+  const [token] = useState(() => new URLSearchParams(window.location.search).get('token'));
+
+  // Redirect if no token is present
+  useEffect(() => {
+    if (!token) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Invalid or missing reset token",
+      });
+      navigate("/");
+    }
+  }, [token, toast, navigate]);
 
   const form = useForm<ResetFormData>({
     resolver: zodResolver(resetSchema),
@@ -44,14 +56,13 @@ export default function ResetPasswordPage() {
   const onSubmit = async (data: ResetFormData) => {
     try {
       setIsResetting(true);
-      const token = new URLSearchParams(window.location.search).get('token');
-      
       if (!token) {
         toast({
           variant: "destructive",
           title: "Error",
           description: "Invalid or missing reset token",
         });
+        navigate("/");
         return;
       }
 
