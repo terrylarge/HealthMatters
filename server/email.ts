@@ -80,11 +80,17 @@ This link will expire in 1 hour for security reasons.
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #2563eb; text-align: center;">Password Reset Request</h1>
           <p>You requested to reset your password for Health Matters at Large.</p>
-          <p>Click the link below to reset your password:</p>
-          <p style="margin: 20px 0; word-break: break-all;">
-            <a href="${encodedResetLink}" style="color: #2563eb;">
-              ${encodedResetLink}
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${encodedResetLink}"
+               style="background-color: #2563eb; color: white; padding: 12px 24px; 
+                      text-decoration: none; border-radius: 4px; display: inline-block;
+                      font-family: Arial, sans-serif;">
+              Reset Password
             </a>
+          </div>
+          <p style="color: #666; font-size: 14px;">If the button above doesn't work, copy and paste this link into your browser:</p>
+          <p style="margin: 10px 0; word-break: break-all; background: #f5f5f5; padding: 10px; border-radius: 4px;">
+            ${encodedResetLink}
           </p>
           <p style="color: #666; font-size: 14px;">If you didn't request this, please ignore this email.</p>
           <p style="color: #666; font-size: 14px;">This link will expire in 1 hour for security reasons.</p>

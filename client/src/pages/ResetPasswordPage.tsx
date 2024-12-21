@@ -31,7 +31,20 @@ export default function ResetPasswordPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [isResetting, setIsResetting] = useState(false);
-  const [token] = useState(() => new URLSearchParams(window.location.search).get('token'));
+  const [token] = useState(() => {
+    // Handle both direct access and Gmail's redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    const directToken = urlParams.get('token');
+    const redirectUrl = urlParams.get('q');
+    
+    if (directToken) return directToken;
+    if (redirectUrl) {
+      // Extract token from Gmail's redirect URL
+      const redirectParams = new URLSearchParams(new URL(redirectUrl).search);
+      return redirectParams.get('token');
+    }
+    return null;
+  });
 
   // Redirect if no token is present
   useEffect(() => {
