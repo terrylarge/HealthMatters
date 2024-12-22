@@ -45,19 +45,15 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
     console.log(`Attempting to send password reset email to: ${email}`);
     
     // Get the correct Replit URL for the deployment
-    let resetLink;
-    if (process.env.REPL_SLUG) {
-      resetLink = `https://${process.env.REPL_SLUG}.repl.co/reset-password?token=${resetToken}`;
-    } else {
-      resetLink = `http://localhost:5000/reset-password?token=${resetToken}`;
-    }
-    console.log('Generated reset link:', resetLink); // Add logging for debugging
-
-    // Encode the token for URL safety
-    const safeToken = encodeURIComponent(resetToken);
-    const encodedResetLink = resetLink.replace(resetToken, safeToken);
+    const baseUrl = process.env.REPL_SLUG 
+      ? `https://${process.env.REPL_SLUG}.repl.co`
+      : 'http://localhost:5000';
     
-    console.log('Final encoded reset link:', encodedResetLink); // Debug log
+    // Encode the token for URL safety and construct the full URL
+    const safeToken = encodeURIComponent(resetToken);
+    const encodedResetLink = `${baseUrl}/reset-password?token=${safeToken}`;
+    
+    console.log('Reset password link:', encodedResetLink);
 
     const mailOptions = {
       from: {
