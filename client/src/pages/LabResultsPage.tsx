@@ -52,9 +52,103 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#f3f4f6',
   },
+  bmiGraph: {
+    marginVertical: 15,
+    height: 100,
+    position: 'relative',
+  },
+  bmiBar: {
+    height: 20,
+    marginVertical: 10,
+    flexDirection: 'row',
+  },
+  bmiSegment: {
+    height: '100%',
+  },
+  bmiMarker: {
+    width: 2,
+    height: 30,
+    backgroundColor: '#ef4444',
+    position: 'absolute',
+  },
+  bmiLabel: {
+    fontSize: 10,
+    color: '#6b7280',
+    position: 'absolute',
+    top: 35,
+  },
+  bmiRange: {
+    fontSize: 8,
+    color: '#9ca3af',
+    position: 'absolute',
+    top: -15,
+  },
 });
 
 // PDF Document Component
+const BMIVisualization = ({ bmi }: { bmi: { score: number; category: string } }) => {
+  const totalWidth = 500;
+  const ranges = [
+    { max: 18.5, color: '#93c5fd', label: 'Underweight', width: '20%' },
+    { max: 25, color: '#86efac', label: 'Normal', width: '30%' },
+    { max: 30, color: '#fcd34d', label: 'Overweight', width: '25%' },
+    { max: 35, color: '#f87171', label: 'Obese', width: '25%' },
+  ];
+
+  // Calculate marker position (as percentage of total width)
+  const markerPosition = Math.min(Math.max((bmi.score - 15) / (35 - 15), 0), 1) * totalWidth;
+
+  return (
+    <View style={styles.bmiGraph}>
+      <View style={styles.bmiBar}>
+        {ranges.map((range, index) => (
+          <View
+            key={index}
+            style={[
+              styles.bmiSegment,
+              { backgroundColor: range.color, width: range.width }
+            ]}
+          />
+        ))}
+      </View>
+      
+      {/* BMI Scale Labels */}
+      {[15, 18.5, 25, 30, 35].map((value, index) => {
+        const position = ((value - 15) / (35 - 15)) * totalWidth;
+        return (
+          <Text
+            key={index}
+            style={[styles.bmiLabel, { left: position - 10 }]}
+          >
+            {value}
+          </Text>
+        );
+      })}
+
+      {/* Category Labels */}
+      {ranges.map((range, index) => {
+        const prevRangesWidth = ranges
+          .slice(0, index)
+          .reduce((acc, r) => acc + parseFloat(r.width), 0);
+        return (
+          <Text
+            key={index}
+            style={[
+              styles.bmiRange,
+              { left: (prevRangesWidth * totalWidth) / 100 + (parseFloat(range.width) * totalWidth) / 200 - 20 }
+            ]}
+          >
+            {range.label}
+          </Text>
+        );
+      })}
+
+      {/* BMI Marker */}
+      <View style={[styles.bmiMarker, { left: markerPosition - 1 }]} />
+    </View>
+  );
+};
+
 const AnalysisPDF = ({ result }: { result: LabResult }) => (
   <Document>
     <Page size="A4" style={styles.page}>
@@ -70,6 +164,7 @@ const AnalysisPDF = ({ result }: { result: LabResult }) => (
               <Text style={styles.text}>
                 Your BMI: {result.analysis.bmi.score.toFixed(1)} ({result.analysis.bmi.category})
               </Text>
+              <BMIVisualization bmi={result.analysis.bmi} />
             </View>
 
             {result.analysis.analysis && (
