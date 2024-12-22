@@ -88,11 +88,11 @@ const styles = StyleSheet.create({
 // PDF Document Component
 const BMIVisualization = ({ bmi }: { bmi: { score: number; category: string } }) => {
   const totalWidth = 500;
-  const minBMI = 15;
-  const maxBMI = 40;
+  const minBMI = 10;
+  const maxBMI = 45;
   const ranges = [
-    { min: minBMI, max: 30, color: '#f1f5f9', label: 'Under 30' },
-    { min: 30, max: maxBMI, color: '#f87171', label: 'Obese (30+)' },
+    { min: minBMI, max: 30, color: '#ffffff', label: 'Under 30' },
+    { min: 30, max: maxBMI, color: '#ef4444', label: 'Obese (30+)' },
   ];
 
   // Calculate width for each range based on their BMI span
