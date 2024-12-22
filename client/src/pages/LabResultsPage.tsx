@@ -89,10 +89,10 @@ const styles = StyleSheet.create({
 const BMIVisualization = ({ bmi }: { bmi: { score: number; category: string } }) => {
   const totalWidth = 500;
   const ranges = [
-    { max: 18.5, color: '#93c5fd', label: 'Underweight', width: '20%' },
-    { max: 25, color: '#86efac', label: 'Normal', width: '30%' },
+    { max: 18.5, color: '#93c5fd', label: 'Underweight', width: '17.5%' },
+    { max: 25, color: '#86efac', label: 'Normal', width: '32.5%' },
     { max: 30, color: '#fcd34d', label: 'Overweight', width: '25%' },
-    { max: 35, color: '#f87171', label: 'Obese', width: '25%' },
+    { max: Infinity, color: '#f87171', label: 'Obese', width: '25%' },
   ];
 
   // Calculate marker position (as percentage of total width)
