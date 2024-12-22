@@ -91,10 +91,8 @@ const BMIVisualization = ({ bmi }: { bmi: { score: number; category: string } })
   const minBMI = 15;
   const maxBMI = 40;
   const ranges = [
-    { min: minBMI, max: 18.5, color: '#93c5fd', label: 'Underweight' },
-    { min: 18.5, max: 25, color: '#86efac', label: 'Normal' },
-    { min: 25, max: 30, color: '#fcd34d', label: 'Overweight' },
-    { min: 30, max: maxBMI, color: '#f87171', label: 'Obese' },
+    { min: minBMI, max: 30, color: '#f1f5f9', label: 'Under 30' },
+    { min: 30, max: maxBMI, color: '#f87171', label: 'Obese (30+)' },
   ];
 
   // Calculate width for each range based on their BMI span
