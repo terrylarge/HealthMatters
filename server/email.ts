@@ -45,9 +45,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
     console.log(`Attempting to send password reset email to: ${email}`);
     
     // Get the correct Replit URL for the deployment
-    const baseUrl = process.env.REPL_SLUG 
-      ? `https://${process.env.REPL_SLUG}.repl.co`
-      : 'http://localhost:5000';
+    const baseUrl = 'https://health-mate-tracker-TerryLarge.replit.app';
     
     // Encode the token for URL safety and construct the full URL
     const safeToken = encodeURIComponent(resetToken);
