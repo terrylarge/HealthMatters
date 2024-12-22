@@ -28,17 +28,25 @@ function App() {
     );
   }
 
-  // Handle reset password page before any other routes
+  // Handle reset password page and Gmail redirects before authentication check
   const currentPath = window.location.pathname;
-  if (currentPath === '/url') {
-    // Handle Gmail redirect
-    const urlParams = new URLSearchParams(window.location.search);
-    const redirectUrl = urlParams.get('q');
-    if (redirectUrl && redirectUrl.includes('/reset-password')) {
-      return <ResetPasswordPage />;
+  const searchParams = new URLSearchParams(window.location.search);
+
+  // Handle Gmail redirect URLs
+  if (searchParams.has('q')) {
+    const redirectUrl = searchParams.get('q');
+    try {
+      const decodedUrl = decodeURIComponent(redirectUrl!);
+      if (decodedUrl.includes('/reset-password')) {
+        return <ResetPasswordPage />;
+      }
+    } catch (error) {
+      console.error('Failed to decode Gmail redirect URL:', error);
     }
-  } else if (currentPath.startsWith('/reset-password')) {
-    // Handle direct reset password URL
+  }
+
+  // Handle direct reset password URLs
+  if (currentPath.startsWith('/reset-password')) {
     return <ResetPasswordPage />;
   }
 

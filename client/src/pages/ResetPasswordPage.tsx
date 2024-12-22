@@ -33,22 +33,26 @@ export default function ResetPasswordPage() {
   const [isResetting, setIsResetting] = useState(false);
   const [token] = useState(() => {
     try {
-      const urlParams = new URLSearchParams(window.location.search);
+      const searchParams = new URLSearchParams(window.location.search);
       
-      // First try direct token
-      const directToken = urlParams.get('token');
-      if (directToken) return directToken;
-      
-      // Then try Gmail redirect format
-      const redirectUrl = urlParams.get('q');
-      if (redirectUrl) {
-        // Gmail encodes the URL, so we need to decode it first
-        const decodedUrl = decodeURIComponent(redirectUrl);
-        // Extract the token parameter from the decoded URL
-        const tokenMatch = decodedUrl.match(/[?&]token=([^&]+)/);
-        if (tokenMatch) return tokenMatch[1];
+      // Case 1: Direct access with token parameter
+      const directToken = searchParams.get('token');
+      if (directToken) {
+        return decodeURIComponent(directToken);
       }
       
+      // Case 2: Gmail redirect URL
+      const gmailRedirect = searchParams.get('q');
+      if (gmailRedirect) {
+        const decodedRedirect = decodeURIComponent(gmailRedirect);
+        const redirectUrl = new URL(decodedRedirect);
+        const tokenFromRedirect = new URLSearchParams(redirectUrl.search).get('token');
+        if (tokenFromRedirect) {
+          return decodeURIComponent(tokenFromRedirect);
+        }
+      }
+      
+      console.log('No valid token found in URL parameters');
       return null;
     } catch (error) {
       console.error('Error extracting reset token:', error);
