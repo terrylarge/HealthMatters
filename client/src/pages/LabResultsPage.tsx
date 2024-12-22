@@ -88,15 +88,24 @@ const styles = StyleSheet.create({
 // PDF Document Component
 const BMIVisualization = ({ bmi }: { bmi: { score: number; category: string } }) => {
   const totalWidth = 500;
+  const minBMI = 15;
+  const maxBMI = 40;
   const ranges = [
-    { max: 18.5, color: '#93c5fd', label: 'Underweight', width: '17.5%' },
-    { max: 25, color: '#86efac', label: 'Normal', width: '32.5%' },
-    { max: 30, color: '#fcd34d', label: 'Overweight', width: '25%' },
-    { max: Infinity, color: '#f87171', label: 'Obese', width: '25%' },
+    { min: minBMI, max: 18.5, color: '#93c5fd', label: 'Underweight' },
+    { min: 18.5, max: 25, color: '#86efac', label: 'Normal' },
+    { min: 25, max: 30, color: '#fcd34d', label: 'Overweight' },
+    { min: 30, max: maxBMI, color: '#f87171', label: 'Obese' },
   ];
 
+  // Calculate width for each range based on their BMI span
+  ranges.forEach(range => {
+    const span = range.max - range.min;
+    const totalSpan = maxBMI - minBMI;
+    range.width = `${(span / totalSpan) * 100}%`;
+  });
+
   // Calculate marker position (as percentage of total width)
-  const markerPosition = Math.min(Math.max((bmi.score - 15) / (35 - 15), 0), 1) * totalWidth;
+  const markerPosition = Math.min(Math.max((bmi.score - minBMI) / (maxBMI - minBMI), 0), 1) * totalWidth;
 
   return (
     <View style={styles.bmiGraph}>
