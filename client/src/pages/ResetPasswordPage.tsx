@@ -32,32 +32,10 @@ export default function ResetPasswordPage() {
   const { toast } = useToast();
   const [isResetting, setIsResetting] = useState(false);
   const [token] = useState(() => {
-    try {
-      const searchParams = new URLSearchParams(window.location.search);
-      
-      // Case 1: Direct access with token parameter
-      const directToken = searchParams.get('token');
-      if (directToken) {
-        return decodeURIComponent(directToken);
-      }
-      
-      // Case 2: Gmail redirect URL
-      const gmailRedirect = searchParams.get('q');
-      if (gmailRedirect) {
-        const decodedRedirect = decodeURIComponent(gmailRedirect);
-        const redirectUrl = new URL(decodedRedirect);
-        const tokenFromRedirect = new URLSearchParams(redirectUrl.search).get('token');
-        if (tokenFromRedirect) {
-          return decodeURIComponent(tokenFromRedirect);
-        }
-      }
-      
-      console.log('No valid token found in URL parameters');
-      return null;
-    } catch (error) {
-      console.error('Error extracting reset token:', error);
-      return null;
-    }
+    const searchParams = new URLSearchParams(window.location.search);
+    const token = searchParams.get('token');
+    console.log('Reset token from URL:', token);
+    return token;
   });
 
   // Redirect if no token is present

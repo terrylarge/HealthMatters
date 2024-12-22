@@ -28,12 +28,22 @@ function App() {
     );
   }
 
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-border" />
+      </div>
+    );
+  }
+
   // Handle reset password page and Gmail redirects before authentication check
   const currentPath = window.location.pathname;
   const searchParams = new URLSearchParams(window.location.search);
 
   // Handle reset password URLs
-  if (currentPath === '/reset-password' || searchParams.has('q')) {
+  if (currentPath === '/reset-password') {
+    console.log('Rendering reset password page with token:', searchParams.get('token'));
     return <ResetPasswordPage />;
   }
 
