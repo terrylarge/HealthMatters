@@ -28,9 +28,17 @@ function App() {
     );
   }
 
-  // Public routes that don't require authentication
+  // Handle reset password page before any other routes
   const currentPath = window.location.pathname;
-  if (currentPath.startsWith('/reset-password')) {
+  if (currentPath === '/url') {
+    // Handle Gmail redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('q');
+    if (redirectUrl && redirectUrl.includes('/reset-password')) {
+      return <ResetPasswordPage />;
+    }
+  } else if (currentPath.startsWith('/reset-password')) {
+    // Handle direct reset password URL
     return <ResetPasswordPage />;
   }
 
