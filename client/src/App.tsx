@@ -32,21 +32,8 @@ function App() {
   const currentPath = window.location.pathname;
   const searchParams = new URLSearchParams(window.location.search);
 
-  // Handle Gmail redirect URLs
-  if (searchParams.has('q')) {
-    const redirectUrl = searchParams.get('q');
-    try {
-      const decodedUrl = decodeURIComponent(redirectUrl!);
-      if (decodedUrl.includes('/reset-password')) {
-        return <ResetPasswordPage />;
-      }
-    } catch (error) {
-      console.error('Failed to decode Gmail redirect URL:', error);
-    }
-  }
-
-  // Handle direct reset password URLs
-  if (currentPath.startsWith('/reset-password')) {
+  // Handle reset password URLs
+  if (currentPath === '/reset-password' || searchParams.has('q')) {
     return <ResetPasswordPage />;
   }
 
@@ -70,6 +57,7 @@ function App() {
         <Switch>
           <Route path="/" component={HealthProfilePage} />
           <Route path="/lab-results" component={LabResultsPage} />
+          <Route path="/reset-password" component={ResetPasswordPage} />
           <Route>
             <Card>
               <CardContent className="pt-6">
