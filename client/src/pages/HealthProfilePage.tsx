@@ -94,7 +94,15 @@ export default function HealthProfilePage() {
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
-      await updateProfile(data);
+      const result = await updateProfile(data);
+      if (!result.ok) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: result.message || "Failed to update profile. Please try again.",
+        });
+        return;
+      }
       // Only navigate after successful update
       navigate("/lab-results");
     } catch (error) {
@@ -102,7 +110,7 @@ export default function HealthProfilePage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to update profile. Please try again.",
       });
     }
   };
