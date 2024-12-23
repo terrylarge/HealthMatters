@@ -132,7 +132,11 @@ export default function HealthProfilePage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Sex</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select sex" />
