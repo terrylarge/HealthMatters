@@ -1,5 +1,6 @@
 import { useHealthProfile } from "@/hooks/use-health-profile";
 import type { LabResult } from "@db/schema";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -97,13 +98,26 @@ const styles = StyleSheet.create({
 });
 
 // PDF Document Component
-const BMIVisualization = ({ bmi }: { bmi: { score: number; category: string } }) => {
-  const data = [
-    { bmi: 18.5, category: "Underweight", range: "<18.5" },
-    { bmi: 25, category: "Normal", range: "18.5-24.9" },
-    { bmi: 30, category: "Overweight", range: "25-29.9" },
-    { bmi: 35, category: "Obese", range: "≥30" },
-  ];
+interface BMIData {
+    bmi: number;
+    category: string;
+    range: string;
+  }
+
+  interface BMIProps {
+    bmi: {
+      score: number;
+      category: string;
+    };
+  }
+
+  const BMIVisualization = ({ bmi }: BMIProps) => {
+    const data: BMIData[] = [
+      { bmi: 18.5, category: "Underweight", range: "<18.5" },
+      { bmi: 25, category: "Normal", range: "18.5-24.9" },
+      { bmi: 30, category: "Overweight", range: "25-29.9" },
+      { bmi: 35, category: "Obese", range: "≥30" },
+    ];
 
   return (
     <View style={styles.bmiGraph}>
@@ -240,8 +254,11 @@ export default function LabResultsPage() {
   return (
     <div className="space-y-8">
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Upload Lab Results</CardTitle>
+          <Button variant="ghost" asChild>
+            <Link href="/deep-dive">Diving Deep Into Health Matters</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -271,13 +288,16 @@ export default function LabResultsPage() {
         <Card key={result.id}>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              Analysis Results - {new Date(result.uploadedAt).toLocaleDateString()}
+              <span style={{textAlign: 'left'}}>
+                <Link href="/deep-dive">Diving Deep Into Health Matters</Link>
+              </span>
+              <span style={{textAlign: 'center'}}>Analysis Results - {new Date(result.uploadedAt).toLocaleDateString()}</span>
             </CardTitle>
             <PDFDownloadLink
               document={<AnalysisPDF result={result} />}
               fileName={`lab-analysis-${new Date(result.uploadedAt).toISOString().split('T')[0]}.pdf`}
             >
-              {({ loading }) => (
+              {({ loading }: { loading: boolean }) => (
                 <Button variant="outline" disabled={loading}>
                   <Download className="h-4 w-4 mr-2" />
                   {loading ? "Preparing..." : "Download PDF"}
@@ -305,14 +325,14 @@ export default function LabResultsPage() {
                           type="number"
                           domain={[15, 35]}
                           ticks={[17, 21.7, 27.5, 32.5]}
-                          tickFormatter={(value) => {
-                            const categories = {
-                              17: "Underweight",
-                              21.7: "Normal",
-                              27.5: "Overweight",
-                              32.5: "Obese"
-                            };
-                            return categories[value] || value.toString();
+                          tickFormatter={(value: number) => {
+                            const categories = new Map<number, string>([
+                              [17, "Underweight"],
+                              [21.7, "Normal"],
+                              [27.5, "Overweight"],
+                              [32.5, "Obese"]
+                            ]);
+                            return categories.get(value) ?? value.toString();
                           }}
                           tick={{ 
                             dy: 10,

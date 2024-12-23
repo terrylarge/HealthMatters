@@ -1,8 +1,8 @@
+import { useToast } from "@/hooks/use-toast";
 import { useHealthProfile } from "@/hooks/use-health-profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -136,7 +136,6 @@ export default function HealthProfilePage() {
                   <FormLabel>Sex</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value}
                     value={field.value}
                   >
                     <FormControl>
