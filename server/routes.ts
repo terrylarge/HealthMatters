@@ -168,6 +168,46 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Health Tips API endpoint
+  app.post('/api/health-tips', async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const { age, sex, bmi, medicalConditions, medications } = req.body;
+
+      // Generate personalized tips based on user's health profile
+      const tips = [
+        `As a ${age}-year-old ${sex}, maintaining regular health check-ups is crucial.`,
+        bmi > 25 ? "Consider incorporating more physical activity into your daily routine." : "Keep up your healthy weight management habits.",
+      ];
+
+      // Add condition-specific tips
+      if (medicalConditions.length > 0) {
+        tips.push("Remember to monitor your existing health conditions and follow your healthcare provider's advice.");
+      }
+
+      // Add medication-related tips
+      if (medications.length > 0) {
+        tips.push("Maintain your medication schedule as prescribed by your healthcare provider.");
+      }
+
+      // Add general health tips
+      tips.push(
+        "Stay hydrated by drinking plenty of water throughout the day.",
+        "Aim for 7-9 hours of quality sleep each night.",
+        "Include a variety of fruits and vegetables in your diet.",
+        "Practice stress management through relaxation techniques or mindfulness."
+      );
+
+      res.json({ tips });
+    } catch (error) {
+      console.error('Error generating health tips:', error);
+      res.status(500).json({ message: "Failed to generate health tips" });
+    }
+  });
+
   app.post('/api/reset-password', async (req, res) => {
     try {
       const { email } = req.body;

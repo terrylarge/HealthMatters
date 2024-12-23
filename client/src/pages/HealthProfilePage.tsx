@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
+import { HealthTipsSidebar } from "@/components/HealthTipsSidebar";
 
 const profileSchema = z.object({
   birthdate: z.string().min(1, "Birthdate is required"),
@@ -105,7 +106,8 @@ export default function HealthProfilePage() {
   }
 
   return (
-    <Card>
+    <div className="grid gap-8 lg:grid-cols-[1fr,auto]">
+      <Card>
       <CardHeader>
         <CardTitle>Health Profile</CardTitle>
       </CardHeader>
@@ -305,5 +307,7 @@ export default function HealthProfilePage() {
         </Form>
       </CardContent>
     </Card>
+    <HealthTipsSidebar />
+    </div>
   );
 }
