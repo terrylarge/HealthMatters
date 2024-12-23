@@ -22,6 +22,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, X } from "lucide-react";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 
 const profileSchema = z.object({
   birthdate: z.string().min(1, "Birthdate is required"),
@@ -55,14 +56,28 @@ export default function HealthProfilePage() {
     defaultValues: {
       birthdate: "",
       sex: undefined,
-      heightFeet: undefined,
-      heightInches: undefined,
-      weightPounds: undefined,
+      heightFeet: 0,
+      heightInches: 0,
+      weightPounds: 0,
       medicalConditions: [],
       medications: [],
     },
-    values: profile ?? undefined,
   });
+
+  // Update form values when profile data loads
+  useEffect(() => {
+    if (profile) {
+      form.reset({
+        birthdate: profile.birthdate,
+        sex: profile.sex,
+        heightFeet: profile.heightFeet,
+        heightInches: profile.heightInches,
+        weightPounds: profile.weightPounds,
+        medicalConditions: profile.medicalConditions,
+        medications: profile.medications,
+      });
+    }
+  }, [profile, form.reset]);
 
   const onSubmit = async (data: ProfileFormData) => {
     await updateProfile(data);
