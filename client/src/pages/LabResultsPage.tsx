@@ -53,105 +53,100 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
   },
   bmiGraph: {
-    marginVertical: 15,
-    height: 100,
+    marginVertical: 20,
+    height: 80,
     position: 'relative',
   },
-  bmiBar: {
-    height: 20,
-    marginVertical: 10,
-    flexDirection: 'row',
+  bmiLine: {
+    position: 'relative',
+    height: 30,
+    marginBottom: 20,
   },
-  bmiSegment: {
-    height: '100%',
+  bmiScale: {
+    position: 'absolute',
+    top: 15,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: '#9ca3af',
   },
   bmiMarker: {
+    position: 'absolute',
     width: 2,
     height: 30,
     backgroundColor: '#ef4444',
-    position: 'absolute',
+    top: 0,
   },
   bmiLabel: {
+    position: 'absolute',
     fontSize: 10,
     color: '#6b7280',
-    position: 'absolute',
-    top: 35,
+    top: 20,
+    transform: 'translateX(-50%)',
   },
-  bmiRange: {
-    fontSize: 8,
-    color: '#9ca3af',
+  categoryLabels: {
+    position: 'relative',
+    height: 20,
+  },
+  categoryLabel: {
     position: 'absolute',
-    top: -15,
+    fontSize: 8,
+    color: '#6b7280',
+    transform: 'translateX(-50%)',
   },
 });
 
 // PDF Document Component
 const BMIVisualization = ({ bmi }: { bmi: { score: number; category: string } }) => {
-  const totalWidth = 500;
-  const minBMI = 10;
-  const maxBMI = 45;
-  const ranges = [
-    { min: minBMI, max: 30, color: '#ffffff', label: 'Under 30' },
-    { min: 30, max: maxBMI, color: '#ef4444', label: 'Obese (30+)' },
+  const data = [
+    { bmi: 18.5, category: "Underweight", range: "<18.5" },
+    { bmi: 25, category: "Normal", range: "18.5-24.9" },
+    { bmi: 30, category: "Overweight", range: "25-29.9" },
+    { bmi: 35, category: "Obese", range: "≥30" },
   ];
-
-  // Calculate width for each range based on their BMI span
-  ranges.forEach(range => {
-    const span = range.max - range.min;
-    const totalSpan = maxBMI - minBMI;
-    range.width = `${(span / totalSpan) * 100}%`;
-  });
-
-  // Calculate marker position (as percentage of total width)
-  const markerPosition = Math.min(Math.max((bmi.score - minBMI) / (maxBMI - minBMI), 0), 1) * totalWidth;
 
   return (
     <View style={styles.bmiGraph}>
-      <View style={styles.bmiBar}>
-        {ranges.map((range, index) => (
-          <View
+      {/* Simple scale visualization */}
+      <View style={styles.bmiLine}>
+        <View style={styles.bmiScale} />
+        
+        {/* Scale markers */}
+        {data.map((point, index) => (
+          <Text
             key={index}
             style={[
-              styles.bmiSegment,
-              { backgroundColor: range.color, width: range.width }
+              styles.bmiLabel,
+              { left: `${((point.bmi - 15) / 25) * 100}%` }
             ]}
-          />
+          >
+            {point.bmi}
+          </Text>
+        ))}
+
+        {/* BMI marker */}
+        <View
+          style={[
+            styles.bmiMarker,
+            { left: `${((bmi.score - 15) / 25) * 100}%` }
+          ]}
+        />
+      </View>
+
+      {/* Category labels */}
+      <View style={styles.categoryLabels}>
+        {data.map((point, index) => (
+          <Text
+            key={index}
+            style={[
+              styles.categoryLabel,
+              { left: `${((point.bmi - 15) / 25) * 100}%` }
+            ]}
+          >
+            {point.category}
+          </Text>
         ))}
       </View>
-      
-      {/* BMI Scale Labels */}
-      {[15, 18.5, 25, 30, 35].map((value, index) => {
-        const position = ((value - 15) / (35 - 15)) * totalWidth;
-        return (
-          <Text
-            key={index}
-            style={[styles.bmiLabel, { left: position - 10 }]}
-          >
-            {value}
-          </Text>
-        );
-      })}
-
-      {/* Category Labels */}
-      {ranges.map((range, index) => {
-        const prevRangesWidth = ranges
-          .slice(0, index)
-          .reduce((acc, r) => acc + parseFloat(r.width), 0);
-        return (
-          <Text
-            key={index}
-            style={[
-              styles.bmiRange,
-              { left: (prevRangesWidth * totalWidth) / 100 + (parseFloat(range.width) * totalWidth) / 200 - 20 }
-            ]}
-          >
-            {range.label}
-          </Text>
-        );
-      })}
-
-      {/* BMI Marker */}
-      <View style={[styles.bmiMarker, { left: markerPosition - 1 }]} />
     </View>
   );
 };
