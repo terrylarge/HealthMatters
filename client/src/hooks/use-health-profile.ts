@@ -6,11 +6,11 @@ export function useHealthProfile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading } = useQuery<HealthProfile | null>({
+  const { data: profile, isLoading, error } = useQuery<HealthProfile | null>({
     queryKey: ['/api/health-profile'],
-    staleTime: Infinity,
-    retry: false,
-    refetchOnWindowFocus: false,
+    staleTime: 0, // Allow refetching to get fresh data
+    retry: 1,
+    refetchOnWindowFocus: true, // Refetch when window gets focus
   });
 
   const mutation = useMutation({
@@ -85,6 +85,7 @@ export function useHealthProfile() {
   return {
     profile,
     isLoading,
+    error,
     updateProfile: mutation.mutateAsync,
     uploadLabResults: uploadLabResults.mutateAsync,
     isUploading: uploadLabResults.isPending,

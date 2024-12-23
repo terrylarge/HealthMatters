@@ -48,8 +48,19 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function HealthProfilePage() {
-  const { profile, isLoading, updateProfile } = useHealthProfile();
+  const { profile, isLoading, error, updateProfile } = useHealthProfile();
   const [, navigate] = useLocation();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load health profile. Please try again.",
+      });
+    }
+  }, [error, toast]);
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
