@@ -19,13 +19,7 @@ export function HealthTipsSidebar() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            age: calculateAge(profile.birthdate),
-            sex: profile.sex,
-            bmi: calculateBMI(profile.weightPounds, profile.heightFeet, profile.heightInches),
-            medicalConditions: profile.medicalConditions,
-            medications: profile.medications,
-          }),
+          credentials: 'include',
         });
 
         if (!response.ok) {

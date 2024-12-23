@@ -204,21 +204,42 @@ export function registerRoutes(app: Express): Server {
     }
 
     try {
-      const { age, sex, bmi, medicalConditions, medications } = req.body;
+      // Get the current user's profile directly from the database
+      const [profile] = await db
+        .select()
+        .from(healthProfiles)
+        .where(eq(healthProfiles.userId, req.user!.id))
+        .limit(1);
+
+      if (!profile) {
+        return res.status(404).json({ message: "Health profile not found" });
+      }
+
+      // Calculate age from birthdate
+      const birthDate = new Date(profile.birthdate);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      // Calculate BMI
+      const bmi = (profile.weightPounds * 703) / Math.pow((profile.heightFeet * 12 + profile.heightInches), 2);
 
       // Generate personalized tips based on user's health profile
       const tips = [
-        `As a ${age}-year-old ${sex}, maintaining regular health check-ups is crucial.`,
+        `As a ${age}-year-old ${profile.sex}, maintaining regular health check-ups is crucial.`,
         bmi > 25 ? "Consider incorporating more physical activity into your daily routine." : "Keep up your healthy weight management habits.",
       ];
 
       // Add condition-specific tips
-      if (medicalConditions.length > 0) {
+      if (profile.medicalConditions && profile.medicalConditions.length > 0) {
         tips.push("Remember to monitor your existing health conditions and follow your healthcare provider's advice.");
       }
 
       // Add medication-related tips
-      if (medications.length > 0) {
+      if (profile.medications && profile.medications.length > 0) {
         tips.push("Maintain your medication schedule as prescribed by your healthcare provider.");
       }
 
