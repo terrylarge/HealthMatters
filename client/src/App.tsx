@@ -58,7 +58,7 @@ function App() {
       <header className="border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Button variant="ghost" asChild>
-            <Link href="/deep-dive">Diving Deep Into Health Matters</Link>
+            <Link href="/deep-dive">Deep Dive Into</Link>
           </Button>
           <h1 className="text-2xl font-bold text-primary absolute left-1/2 transform -translate-x-1/2">
             Health Matters at Large

@@ -8,7 +8,7 @@ export default function DeepDivePage() {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Diving Deep Into Health Matters</CardTitle>
+          <CardTitle className="text-2xl">Deep Dive Into</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">

@@ -1,12 +1,13 @@
 import { useHealthProfile } from "@/hooks/use-health-profile";
 import type { LabResult } from "@db/schema";
+import type { ReactElement } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Download } from "lucide-react";
-import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, PDFDownloadLinkProps } from '@react-pdf/renderer';
 import {
   LineChart,
   Line,
@@ -165,7 +166,7 @@ interface BMIData {
   );
 };
 
-const AnalysisPDF = ({ result }: { result: LabResult }) => (
+const AnalysisPDF = ({ result }: { result: LabResult }): ReactElement => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
@@ -257,7 +258,7 @@ export default function LabResultsPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Upload Lab Results</CardTitle>
           <Button variant="ghost" asChild>
-            <Link href="/deep-dive">Diving Deep Into Health Matters</Link>
+            <Link href="/deep-dive">Deep Dive Into</Link>
           </Button>
         </CardHeader>
         <CardContent>
@@ -287,18 +288,26 @@ export default function LabResultsPage() {
       {labResults.map((result: LabResult) => (
         <Card key={result.id}>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>
-              <span style={{textAlign: 'left'}}>
-                <Link href="/deep-dive">Diving Deep Into Health Matters</Link>
-              </span>
-              <span style={{textAlign: 'center'}}>Analysis Results - {new Date(result.uploadedAt).toLocaleDateString()}</span>
-            </CardTitle>
+            <CardTitle className="flex justify-between items-center w-full">
+            <div className="text-left">
+              <Link href="/deep-dive">Deep Dive Into</Link>
+            </div>
+            <div className="text-center flex-1">
+              Analysis Results - {new Date(result.uploadedAt).toLocaleDateString()}
+            </div>
+          </CardTitle>
             <PDFDownloadLink
               document={<AnalysisPDF result={result} />}
               fileName={`lab-analysis-${new Date(result.uploadedAt).toISOString().split('T')[0]}.pdf`}
+              className="inline-block"
             >
-              {({ loading }: { loading: boolean }) => (
-                <Button variant="outline" disabled={loading}>
+              {({ loading }) => (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={loading}
+                  className="flex items-center"
+                >
                   <Download className="h-4 w-4 mr-2" />
                   {loading ? "Preparing..." : "Download PDF"}
                 </Button>
@@ -326,13 +335,13 @@ export default function LabResultsPage() {
                           domain={[15, 35]}
                           ticks={[17, 21.7, 27.5, 32.5]}
                           tickFormatter={(value: number) => {
-                            const categories = new Map<number, string>([
-                              [17, "Underweight"],
-                              [21.7, "Normal"],
-                              [27.5, "Overweight"],
-                              [32.5, "Obese"]
-                            ]);
-                            return categories.get(value) ?? value.toString();
+                            const categories = {
+                              17: "Underweight",
+                              21.7: "Normal",
+                              27.5: "Overweight",
+                              32.5: "Obese"
+                            } as const;
+                            return categories[value as keyof typeof categories] ?? value.toString();
                           }}
                           tick={{ 
                             dy: 10,
