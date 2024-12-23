@@ -82,49 +82,10 @@ app.use((req, res, next) => {
   // Increase max listeners to handle multiple error handlers
   server.setMaxListeners(20);
 
-  // Kill any existing process on port 5000 and retry starting the server
-  const startServer = async (retries = 3) => {
-    try {
-      await new Promise<void>((resolve, reject) => {
-        if (server.listening) {
-          server.close();
-        }
-        
-        const listener = server.listen(5000, "0.0.0.0", () => {
-          log(`serving on port 5000`);
-          resolve();
-        });
-
-        listener.on('error', async (err: NodeJS.ErrnoException) => {
-          if (err.code === 'EADDRINUSE' && retries > 0) {
-            log(`Port 5000 in use, retrying in 1s... (${retries} attempts left)`);
-            await new Promise(r => setTimeout(r, 1000));
-            try {
-              await startServer(retries - 1);
-              resolve();
-            } catch (e) {
-              reject(e);
-            }
-          } else {
-            reject(err);
-          }
-        });
-      });
-    } catch (err) {
-      console.error('Failed to start server:', err);
-      if (retries === 0) {
-        process.exit(1);
-      }
-      throw err;
-    }
-  };
-
-  process.on('SIGTERM', () => {
-    server.close(() => {
-      log('Server closed');
-      process.exit(0);
-    });
+  // ALWAYS serve the app on port 5000
+  // this serves both the API and the client
+  const PORT = 5000;
+  server.listen(PORT, "0.0.0.0", () => {
+    log(`serving on port ${PORT}`);
   });
-
-  await startServer();
 })();
