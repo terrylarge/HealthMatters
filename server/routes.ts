@@ -35,13 +35,18 @@ export function registerRoutes(app: Express): Server {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    const [profile] = await db
-      .select()
-      .from(healthProfiles)
-      .where(eq(healthProfiles.userId, req.user!.id))
-      .limit(1);
+    try {
+      const [profile] = await db
+        .select()
+        .from(healthProfiles)
+        .where(eq(healthProfiles.userId, req.user!.id))
+        .limit(1);
 
-    res.json(profile || null);
+      res.json(profile || null);
+    } catch (error) {
+      console.error('Error fetching health profile:', error);
+      res.status(500).json({ message: "Failed to fetch health profile" });
+    }
   });
 
   app.post("/api/health-profile", async (req, res) => {
@@ -49,33 +54,44 @@ export function registerRoutes(app: Express): Server {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    const [existing] = await db
-      .select()
-      .from(healthProfiles)
-      .where(eq(healthProfiles.userId, req.user!.id))
-      .limit(1);
+    try {
+      // Ensure we're only updating the profile for the authenticated user
+      const [existing] = await db
+        .select()
+        .from(healthProfiles)
+        .where(eq(healthProfiles.userId, req.user!.id))
+        .limit(1);
 
-    if (existing) {
-      const [updated] = await db
-        .update(healthProfiles)
-        .set({
+      if (existing) {
+        const [updated] = await db
+          .update(healthProfiles)
+          .set({
+            ...req.body,
+            userId: req.user!.id, // Ensure userId remains correct
+            updatedAt: new Date()
+          })
+          .where(
+            eq(healthProfiles.id, existing.id)
+          )
+          .returning();
+        return res.json(updated);
+      }
+
+      const [profile] = await db
+        .insert(healthProfiles)
+        .values({
           ...req.body,
+          userId: req.user!.id,
+          createdAt: new Date(),
           updatedAt: new Date()
         })
-        .where(eq(healthProfiles.id, existing.id))
         .returning();
-      return res.json(updated);
+
+      res.json(profile);
+    } catch (error) {
+      console.error('Error updating health profile:', error);
+      res.status(500).json({ message: "Failed to update health profile" });
     }
-
-    const [profile] = await db
-      .insert(healthProfiles)
-      .values({
-        ...req.body,
-        userId: req.user!.id
-      })
-      .returning();
-
-    res.json(profile);
   });
 
   // Lab Results routes
