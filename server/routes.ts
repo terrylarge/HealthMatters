@@ -55,6 +55,16 @@ export function registerRoutes(app: Express): Server {
     }
 
     try {
+      // Validate the request body
+      const { 
+        birthdate, sex, heightFeet, heightInches, weightPounds, 
+        medicalConditions, medications 
+      } = req.body;
+
+      if (!birthdate || !sex || heightFeet == null || heightInches == null || weightPounds == null) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
       // Ensure we're only updating the profile for the authenticated user
       const [existing] = await db
         .select()
@@ -62,11 +72,18 @@ export function registerRoutes(app: Express): Server {
         .where(eq(healthProfiles.userId, req.user!.id))
         .limit(1);
 
+      let profile;
       if (existing) {
         const [updated] = await db
           .update(healthProfiles)
           .set({
-            ...req.body,
+            birthdate,
+            sex,
+            heightFeet,
+            heightInches,
+            weightPounds,
+            medicalConditions: medicalConditions || [],
+            medications: medications || [],
             userId: req.user!.id, // Ensure userId remains correct
             updatedAt: new Date()
           })
@@ -74,23 +91,35 @@ export function registerRoutes(app: Express): Server {
             eq(healthProfiles.id, existing.id)
           )
           .returning();
-        return res.json(updated);
+        profile = updated;
+      } else {
+        const [newProfile] = await db
+          .insert(healthProfiles)
+          .values({
+            birthdate,
+            sex,
+            heightFeet,
+            heightInches,
+            weightPounds,
+            medicalConditions: medicalConditions || [],
+            medications: medications || [],
+            userId: req.user!.id,
+            updatedAt: new Date()
+          })
+          .returning();
+        profile = newProfile;
       }
 
-      const [profile] = await db
-        .insert(healthProfiles)
-        .values({
-          ...req.body,
-          userId: req.user!.id,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
-        .returning();
-
-      res.json(profile);
+      res.json({ 
+        ok: true,
+        data: profile 
+      });
     } catch (error) {
       console.error('Error updating health profile:', error);
-      res.status(500).json({ message: "Failed to update health profile" });
+      res.status(500).json({ 
+        ok: false,
+        message: "Failed to update health profile" 
+      });
     }
   });
 

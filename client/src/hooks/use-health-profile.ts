@@ -22,18 +22,22 @@ export function useHealthProfile() {
         body: JSON.stringify(data),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error(await response.text());
+        return { ok: false, message: result.message || 'Failed to update profile' };
       }
 
-      return response.json();
+      return { ok: true, data: result };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/health-profile'] });
-      toast({
-        title: "Success",
-        description: "Health profile updated successfully",
-      });
+    onSuccess: (result) => {
+      if (result.ok) {
+        queryClient.invalidateQueries({ queryKey: ['/api/health-profile'] });
+        toast({
+          title: "Success",
+          description: "Health profile updated successfully",
+        });
+      }
     },
     onError: (error: Error) => {
       toast({
