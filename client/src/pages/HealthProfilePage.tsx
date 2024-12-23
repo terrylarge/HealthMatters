@@ -93,8 +93,18 @@ export default function HealthProfilePage() {
   }, [profile, form.reset]);
 
   const onSubmit = async (data: ProfileFormData) => {
-    await updateProfile(data);
-    navigate("/lab-results");
+    try {
+      await updateProfile(data);
+      // Only navigate after successful update
+      navigate("/lab-results");
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+      });
+    }
   };
 
   if (isLoading) {
