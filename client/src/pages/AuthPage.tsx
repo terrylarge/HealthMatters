@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { useUser } from "@/hooks/use-user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,10 +52,12 @@ export default function AuthPage() {
     defaultValues: {
       email: "",
       password: "",
-      username: "",
+      confirmPassword: "",
     },
   });
 
+  const [, navigate] = useLocation();
+  
   const onSubmit = async (data: AuthFormData) => {
     try {
       if (isRegister) {
@@ -62,6 +65,8 @@ export default function AuthPage() {
       } else {
         await login(data);
       }
+      // Always redirect to health profile page after successful authentication
+      navigate("/");
     } catch (error) {
       console.error('Auth error:', error);
       toast({
