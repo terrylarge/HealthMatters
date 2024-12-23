@@ -9,9 +9,8 @@ import { and, eq, gt } from "drizzle-orm";
 import createMemoryStore from "memorystore";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { users, insertUserSchema, type User, type SelectUser } from "@db/schema";
+import { users, insertUserSchema, type User } from "@db/schema";
 import { db } from "@db";
-import { eq } from "drizzle-orm";
 
 const scryptAsync = promisify(scrypt);
 const crypto = {
@@ -34,7 +33,7 @@ const crypto = {
 
 declare global {
   namespace Express {
-    interface User extends SelectUser { }
+    interface User extends User { }
   }
 }
 
@@ -65,6 +64,8 @@ export function setupAuth(app: Express) {
     new LocalStrategy(
       {
         usernameField: 'email',
+        passwordField: 'password',
+        passReqToCallback: false,
       },
       async (email, password, done) => {
         try {
@@ -75,14 +76,17 @@ export function setupAuth(app: Express) {
             .limit(1);
 
           if (!user) {
-            return done(null, false, { message: "Email not found." });
+            return done(null, false, { message: "Invalid email or password." });
           }
+          
           const isMatch = await crypto.compare(password, user.password);
           if (!isMatch) {
-            return done(null, false, { message: "Incorrect password." });
+            return done(null, false, { message: "Invalid email or password." });
           }
+          
           return done(null, user);
         } catch (err) {
+          console.error('Authentication error:', err);
           return done(err);
         }
       }
@@ -185,7 +189,7 @@ export function setupAuth(app: Express) {
 
           return res.json({
             message: "Login successful",
-            user: { id: user.id, email: user.email, username: user.username },
+            user: { id: user.id, email: user.email },
           });
         });
       })(req, res, next);
