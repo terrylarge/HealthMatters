@@ -8,14 +8,38 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Ensure uploads directory exists
+// Ensure required directories exist
 (async () => {
   try {
     await fs.access("uploads");
+    await fs.access("client/public/images");
   } catch {
     await fs.mkdir("uploads", { recursive: true });
+    await fs.mkdir("client/public/images", { recursive: true });
   }
 })();
+
+// Configure and serve static files
+const staticOptions = {
+  maxAge: '1h',
+  etag: true,
+  lastModified: true,
+};
+
+// Serve static files from the public directory
+app.use(express.static(path.join(process.cwd(), "client/public"), staticOptions));
+
+// Fallback for images with error handling
+app.use('/images', (req, res, next) => {
+  express.static(path.join(process.cwd(), "client/public/images"), staticOptions)(req, res, (err) => {
+    if (err) {
+      console.error('Error serving static file:', err);
+      res.status(404).send('Image not found');
+    } else {
+      next();
+    }
+  });
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
