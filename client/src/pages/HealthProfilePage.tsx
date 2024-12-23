@@ -249,39 +249,8 @@ export default function HealthProfilePage() {
                         <Plus className="h-4 w-4 mr-2" />
                         Add Condition
                       </Button>
-                      <div className="space-y-2 text-sm text-muted-foreground">
-                        <p className="font-medium">Common Medical Conditions:</p>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                          <p>Cardiovascular:</p>
-                          <p>• Hypertension (High Blood Pressure)</p>
-                          <p>• Heart Disease</p>
-                          <p>• High Cholesterol</p>
-                          
-                          <p>Endocrine:</p>
-                          <p>• Type 1 Diabetes</p>
-                          <p>• Type 2 Diabetes</p>
-                          <p>• Thyroid Disorders</p>
-                          
-                          <p>Respiratory:</p>
-                          <p>• Asthma</p>
-                          <p>• COPD</p>
-                          <p>• Sleep Apnea</p>
-                          
-                          <p>Mental Health:</p>
-                          <p>• Anxiety</p>
-                          <p>• Depression</p>
-                          <p>• ADHD</p>
-                          
-                          <p>Musculoskeletal:</p>
-                          <p>• Arthritis</p>
-                          <p>• Chronic Back Pain</p>
-                          <p>• Osteoporosis</p>
-                          
-                          <p>Other:</p>
-                          <p>• Migraine</p>
-                          <p>• Gastrointestinal Disorders</p>
-                          <p>• Chronic Fatigue Syndrome</p>
-                        </div>
+                      <div className="text-sm text-muted-foreground">
+                        <p>Add your medical conditions here.</p>
                       </div>
                     </div>
                   </div>
@@ -330,39 +299,8 @@ export default function HealthProfilePage() {
                         <Plus className="h-4 w-4 mr-2" />
                         Add Medication
                       </Button>
-                      <div className="space-y-2 text-sm text-muted-foreground">
-                        <p className="font-medium">Common Medications:</p>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                          <p>Blood Pressure:</p>
-                          <p>• Lisinopril (ACE inhibitor)</p>
-                          <p>• Amlodipine (Calcium channel blocker)</p>
-                          <p>• Metoprolol (Beta blocker)</p>
-                          
-                          <p>Diabetes:</p>
-                          <p>• Metformin</p>
-                          <p>• Insulin</p>
-                          <p>• Glipizide</p>
-                          
-                          <p>Heart/Cholesterol:</p>
-                          <p>• Atorvastatin (Lipitor)</p>
-                          <p>• Simvastatin (Zocor)</p>
-                          <p>• Aspirin</p>
-                          
-                          <p>Mental Health:</p>
-                          <p>• Sertraline (Zoloft)</p>
-                          <p>• Fluoxetine (Prozac)</p>
-                          <p>• Escitalopram (Lexapro)</p>
-                          
-                          <p>Pain/Inflammation:</p>
-                          <p>• Ibuprofen</p>
-                          <p>• Gabapentin</p>
-                          <p>• Acetaminophen</p>
-                          
-                          <p>Other:</p>
-                          <p>• Levothyroxine (Thyroid)</p>
-                          <p>• Omeprazole (Acid Reflux)</p>
-                          <p>• Albuterol (Asthma)</p>
-                        </div>
+                      <div className="text-sm text-muted-foreground">
+                        <p>Add your medications here.</p>
                       </div>
                     </div>
                   </div>
