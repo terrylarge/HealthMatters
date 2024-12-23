@@ -240,14 +240,21 @@ export default function HealthProfilePage() {
                         </Button>
                       </div>
                     ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => field.onChange([...field.value, ""])}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Condition
-                    </Button>
+                    <div className="space-y-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => field.onChange([...field.value, ""])}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Condition
+                      </Button>
+                      <div className="text-sm text-muted-foreground">
+                        Suggestions: Diabetes, Hypertension, Asthma, Heart Disease, 
+                        Arthritis, Anxiety, Depression, COPD, Thyroid Disorders, 
+                        Chronic Pain, Sleep Apnea, Obesity
+                      </div>
+                    </div>
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -285,14 +292,21 @@ export default function HealthProfilePage() {
                         </Button>
                       </div>
                     ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => field.onChange([...field.value, ""])}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Medication
-                    </Button>
+                    <div className="space-y-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => field.onChange([...field.value, ""])}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Medication
+                      </Button>
+                      <div className="text-sm text-muted-foreground">
+                        Suggestions: Metformin, Lisinopril, Levothyroxine, Omeprazole, 
+                        Metoprolol, Amlodipine, Sertraline, Gabapentin, Vitamin D, 
+                        Atorvastatin, Albuterol, Losartan
+                      </div>
+                    </div>
                   </div>
                   <FormMessage />
                 </FormItem>

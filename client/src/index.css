@@ -11,13 +11,10 @@
     @apply font-sans antialiased text-foreground;
     position: relative;
     min-height: 100vh;
-    background-image: url('/images/LabTesting.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background: none;
   }
 
+  /* Responsive background container */
   body::before {
     content: '';
     position: fixed;
@@ -25,16 +22,39 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-      rgba(255, 255, 255, 0.92),
-      rgba(255, 255, 255, 0.88)
-    );
+    background-image: url('/images/LabTesting.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.15; /* Subtle background */
     z-index: 0;
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      background-position: top center;
+    }
+  }
+
+  /* Overlay gradient */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.85)
+    );
+    z-index: 1;
   }
 
   #root {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     min-height: 100vh;
   }
 }

@@ -29,18 +29,6 @@ const staticOptions = {
 // Serve static files from the public directory
 app.use(express.static(path.join(process.cwd(), "client/public"), staticOptions));
 
-// Fallback for images with error handling
-app.use('/images', (req, res, next) => {
-  express.static(path.join(process.cwd(), "client/public/images"), staticOptions)(req, res, (err) => {
-    if (err) {
-      console.error('Error serving static file:', err);
-      res.status(404).send('Image not found');
-    } else {
-      next();
-    }
-  });
-});
-
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -91,28 +79,52 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client
-  const tryPort = (port: number): Promise<number> => {
-    return new Promise((resolve, reject) => {
-      server.listen(port, "0.0.0.0")
-        .once('listening', () => {
-          resolve(port);
-        })
-        .once('error', (err: NodeJS.ErrnoException) => {
-          if (err.code === 'EADDRINUSE') {
-            tryPort(port + 1).then(resolve, reject);
+  // Increase max listeners to handle multiple error handlers
+  server.setMaxListeners(20);
+
+  // Kill any existing process on port 5000 and retry starting the server
+  const startServer = async (retries = 3) => {
+    try {
+      await new Promise<void>((resolve, reject) => {
+        if (server.listening) {
+          server.close();
+        }
+        
+        const listener = server.listen(5000, "0.0.0.0", () => {
+          log(`serving on port 5000`);
+          resolve();
+        });
+
+        listener.on('error', async (err: NodeJS.ErrnoException) => {
+          if (err.code === 'EADDRINUSE' && retries > 0) {
+            log(`Port 5000 in use, retrying in 1s... (${retries} attempts left)`);
+            await new Promise(r => setTimeout(r, 1000));
+            try {
+              await startServer(retries - 1);
+              resolve();
+            } catch (e) {
+              reject(e);
+            }
           } else {
             reject(err);
           }
         });
-    });
+      });
+    } catch (err) {
+      console.error('Failed to start server:', err);
+      if (retries === 0) {
+        process.exit(1);
+      }
+      throw err;
+    }
   };
 
-  tryPort(5000).then(port => {
-    log(`serving on port ${port}`);
-  }).catch(err => {
-    console.error('Failed to start server:', err);
-    process.exit(1);
+  process.on('SIGTERM', () => {
+    server.close(() => {
+      log('Server closed');
+      process.exit(0);
+    });
   });
+
+  await startServer();
 })();
