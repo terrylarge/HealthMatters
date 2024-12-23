@@ -1,10 +1,11 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, Loader2 } from "lucide-react";
 import AuthPage from "./pages/AuthPage";
 import HealthProfilePage from "./pages/HealthProfilePage";
 import LabResultsPage from "./pages/LabResultsPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import DeepDivePage from "./pages/DeepDivePage";
 import { useUser } from "./hooks/use-user";
 import { Button } from "./components/ui/button";
 
@@ -56,7 +57,12 @@ function App() {
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-primary">Health Matters at Large</h1>
+          <Button variant="ghost" asChild>
+            <Link href="/deep-dive">Diving Deep Into Health Matters</Link>
+          </Button>
+          <h1 className="text-2xl font-bold text-primary absolute left-1/2 transform -translate-x-1/2">
+            Health Matters at Large
+          </h1>
           <Button variant="outline" onClick={() => logout()}>
             Logout
           </Button>
@@ -68,6 +74,7 @@ function App() {
           <Route path="/" component={HealthProfilePage} />
           <Route path="/lab-results" component={LabResultsPage} />
           <Route path="/reset-password" component={ResetPasswordPage} />
+          <Route path="/deep-dive" component={DeepDivePage} />
           <Route>
             <Card>
               <CardContent className="pt-6">
