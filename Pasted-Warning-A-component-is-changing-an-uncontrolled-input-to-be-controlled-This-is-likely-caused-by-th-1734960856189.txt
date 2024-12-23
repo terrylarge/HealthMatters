@@ -1,0 +1,24 @@
+Warning: A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components
+    at input
+    at _c (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/src/components/ui/input.tsx:20:11)
+    at https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/@fs/home/runner/HealthMateTracker/node_modules/.vite/deps/chunk-RQOIHYYC.js?v=46cfbaad:52:11
+    at https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/@fs/home/runner/HealthMateTracker/node_modules/.vite/deps/chunk-RQOIHYYC.js?v=46cfbaad:33:11
+    at https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/src/components/ui/form.tsx:127:9
+    at div
+    at https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/src/components/ui/form.tsx:71:6
+    at Controller (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/@fs/home/runner/HealthMateTracker/node_modules/.vite/deps/chunk-S3FVD4M2.js?v=46cfbaad:313:35)
+    at FormField (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/src/components/ui/form.tsx:32:6)
+    at div
+    at form
+    at FormProvider (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/@fs/home/runner/HealthMateTracker/node_modules/.vite/deps/chunk-S3FVD4M2.js?v=46cfbaad:102:11)
+    at div
+    at _c9 (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/src/components/ui/card.tsx:106:12)
+    at div
+    at _c (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/src/components/ui/card.tsx:20:11)
+    at HealthProfilePage (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/src/pages/HealthProfilePage.tsx:64:49)
+    at Route (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/@fs/home/runner/HealthMateTracker/node_modules/.vite/deps/wouter.js?v=46cfbaad:323:16)
+    at Switch (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/@fs/home/runner/HealthMateTracker/node_modules/.vite/deps/wouter.js?v=46cfbaad:379:17)
+    at main
+    at div
+    at App (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/src/App.tsx:29:39)
+    at QueryClientProvider (https://eca96cba-656d-4ed9-a97b-5c25aa752d1c-00-2vo81i3mj19ls.janeway.replit.dev/@fs/home/runner/HealthMateTracker/node_modules/.vite/deps/@tanstack_react-query.js?v=46cfbaad:2805:3)
