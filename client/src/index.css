@@ -23,20 +23,21 @@
     width: 100%;
     height: 100%;
     background-image: url('/images/health-background.svg');
-    background-size: cover;
+    background-size: 500px;  /* Adjusted for better pattern visibility */
     background-position: center;
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-attachment: fixed;
-    opacity: 0.1; /* Very subtle background */
+    opacity: 0.15;  /* Slightly increased for better visibility */
     z-index: 0;
+    pointer-events: none;  /* Ensures the background doesn't interfere with interactions */
 
     /* Responsive adjustments */
     @media (max-width: 768px) {
-      background-position: top center;
+      background-size: 300px;  /* Smaller pattern on mobile */
     }
   }
 
-  /* Overlay gradient */
+  /* Overlay gradient for better content readability */
   body::after {
     content: '';
     position: fixed;
@@ -46,10 +47,11 @@
     height: 100%;
     background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.95),
-      rgba(255, 255, 255, 0.85)
+      rgba(255, 255, 255, 0.92),
+      rgba(255, 255, 255, 0.88)
     );
     z-index: 1;
+    pointer-events: none;
   }
 
   #root {
