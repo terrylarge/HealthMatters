@@ -13,14 +13,15 @@ export default function DeepDivePage() {
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <Shield className="h-6 w-6 text-primary mt-1" />
+            <Shield className="h-6 w-6 text-primary mt-1" />
               <div>
                 <h2 className="text-xl font-semibold mb-2">Security and Privacy</h2>
                 <p className="text-muted-foreground">
                   At Health Matters at Large, your privacy and data security are our top priorities. 
                   We implement industry-standard encryption and security measures to protect your sensitive 
                   health information. Your data is stored securely and is only accessible to you and the 
-                  healthcare providers you authorize.
+                  healthcare providers you authorize. The only thing we know about you is your email address, 
+                  which we will use to help you change your password and to send you important updates.
                 </p>
               </div>
             </div>
@@ -43,11 +44,11 @@ export default function DeepDivePage() {
               <div>
                 <h2 className="text-xl font-semibold mb-2">About the Developer</h2>
                 <p className="text-muted-foreground">
-                  Hi, I'm Terry Large, the developer behind Health Matters at Large. With a background in 
-                  healthcare technology and a passion for making health information more accessible, I created 
-                  this platform to help people better understand and manage their health data. This project 
-                  combines my technical expertise with a commitment to improving healthcare accessibility and 
-                  understanding.
+                  Hi, I'm Terry Large, the developer behind Health Matters at Large.  I created 
+                  this platform to help people gain insights in their health and offerimportant questions for
+                  their medical team. I know from first hand experience the importance of early dectection. 
+                  For me it was both early detection of my bladder cancer and getting quaility treatment which 
+                  led to the my full remission.  
                 </p>
               </div>
             </div>
