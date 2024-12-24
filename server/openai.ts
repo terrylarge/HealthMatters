@@ -41,9 +41,11 @@ export interface LabAnalysis {
     interpretation: string;
     normalRange?: string;
     unit?: string;
+    severity?: "normal" | "moderate" | "severe";
     trend?: {
       change: number;
       interpretation: string;
+      recommendation?: string;
     };
     historicalData?: Array<{
       date: string;
@@ -51,7 +53,12 @@ export interface LabAnalysis {
     }>;
   }>;
   questions: string[];
-  recommendations?: string[];
+  recommendations: string[];
+  summary: {
+    overview: string;
+    significantChanges: string[];
+    actionItems: string[];
+  };
 }
 
 export async function analyzePDFText(text: string, healthProfile: HealthProfileWithBMI, previousResults?: LabAnalysis[]): Promise<LabAnalysis> {
@@ -65,9 +72,15 @@ export async function analyzePDFText(text: string, healthProfile: HealthProfileW
       messages: [
         {
           role: "system",
-          content: `You are a medical data analyst specializing in laboratory result interpretation with trend analysis capabilities. 
-          Analyze the results in context of the patient's profile and previous results if available.
-          Provide comprehensive analysis including trends, changes, and recommendations.`
+          content: `You are an expert medical data analyst specializing in laboratory result interpretation.
+          Your task is to:
+          1. Analyze lab results comprehensively
+          2. Compare with historical data to identify trends
+          3. Provide detailed interpretations and actionable recommendations
+          4. Highlight significant changes and areas of concern
+          5. Categorize severity levels for each test result
+          6. Generate specific questions for healthcare providers
+          7. Consider the patient's medical conditions and medications when analyzing`
         },
         {
           role: "user",
@@ -101,9 +114,11 @@ Return a JSON object with exactly this structure:
       "interpretation": string,
       "normalRange": string,
       "unit": string,
+      "severity": "normal" | "moderate" | "severe",
       "trend": {
         "change": number,
-        "interpretation": string
+        "interpretation": string,
+        "recommendation": string
       },
       "historicalData": [
         {
@@ -114,7 +129,12 @@ Return a JSON object with exactly this structure:
     }
   ],
   "questions": string[],
-  "recommendations": string[]
+  "recommendations": string[],
+  "summary": {
+    "overview": string,
+    "significantChanges": string[],
+    "actionItems": string[]
+  }
 }`
         }
       ],

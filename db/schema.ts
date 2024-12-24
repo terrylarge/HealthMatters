@@ -35,7 +35,7 @@ export const labResults = pgTable("lab_results", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
-  testDate: timestamp("test_date").notNull(), // Added to track actual test date
+  testDate: timestamp("test_date").notNull(),
   pdfPath: text("pdf_path").notNull(),
   analysis: jsonb("analysis").$type<{
     date: string;
@@ -54,9 +54,11 @@ export const labResults = pgTable("lab_results", {
       interpretation: string;
       normalRange?: string;
       unit?: string;
+      severity?: "normal" | "moderate" | "severe";
       trend?: {
         change: number;
         interpretation: string;
+        recommendation?: string;
       };
       historicalData?: Array<{
         date: string;
@@ -64,7 +66,12 @@ export const labResults = pgTable("lab_results", {
       }>;
     }>;
     questions: string[];
-    recommendations?: string[];
+    recommendations: string[];
+    summary: {
+      overview: string;
+      significantChanges: string[];
+      actionItems: string[];
+    };
   }>(),
 });
 

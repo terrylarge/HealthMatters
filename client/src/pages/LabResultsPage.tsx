@@ -99,34 +99,48 @@ const styles = StyleSheet.create({
   },
 });
 
+// Add color utilities based on severity
+const getSeverityColor = (severity: string | undefined) => {
+  switch (severity) {
+    case "severe":
+      return "text-red-500 dark:text-red-400";
+    case "moderate":
+      return "text-yellow-500 dark:text-yellow-400";
+    case "normal":
+      return "text-green-500 dark:text-green-400";
+    default:
+      return "text-foreground";
+  }
+};
+
 // PDF Document Component
 interface BMIData {
-    bmi: number;
+  bmi: number;
+  category: string;
+  range: string;
+}
+
+interface BMIProps {
+  bmi: {
+    score: number;
     category: string;
-    range: string;
-  }
+  };
+}
 
-  interface BMIProps {
-    bmi: {
-      score: number;
-      category: string;
-    };
-  }
-
-  const BMIVisualization = ({ bmi }: BMIProps) => {
-    const data: BMIData[] = [
-      { bmi: 18.5, category: "Underweight", range: "<18.5" },
-      { bmi: 25, category: "Normal", range: "18.5-24.9" },
-      { bmi: 30, category: "Overweight", range: "25-29.9" },
-      { bmi: 35, category: "Obese", range: "≥30" },
-    ];
+const BMIVisualization = ({ bmi }: BMIProps) => {
+  const data: BMIData[] = [
+    { bmi: 18.5, category: "Underweight", range: "<18.5" },
+    { bmi: 25, category: "Normal", range: "18.5-24.9" },
+    { bmi: 30, category: "Overweight", range: "25-29.9" },
+    { bmi: 35, category: "Obese", range: "≥30" },
+  ];
 
   return (
     <View style={styles.bmiGraph}>
       {/* Simple scale visualization */}
       <View style={styles.bmiLine}>
         <View style={styles.bmiScale} />
-        
+
         {/* Scale markers */}
         {data.map((point, index) => (
           <Text
@@ -261,11 +275,8 @@ export default function LabResultsPage() {
   return (
     <div className="space-y-8">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle>Upload Lab Results</CardTitle>
-          <Button variant="ghost" asChild>
-            <Link href="/deep-dive">Deep Dive Into</Link>
-          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -294,14 +305,9 @@ export default function LabResultsPage() {
       {labResults.map((result: LabResult) => (
         <Card key={result.id}>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex justify-between items-center w-full">
-            <div className="text-left">
-              <Link href="/deep-dive">Deep Dive Into</Link>
-            </div>
-            <div className="text-center flex-1">
+            <CardTitle className="text-xl">
               Analysis Results - {new Date(result.uploadedAt).toLocaleDateString()}
-            </div>
-          </CardTitle>
+            </CardTitle>
             <PDFDownloadLink
               document={<AnalysisPDF result={result} />}
               fileName={`lab-analysis-${new Date(result.uploadedAt).toISOString().split('T')[0]}.pdf`}
@@ -323,6 +329,37 @@ export default function LabResultsPage() {
           <CardContent>
             {result.analysis && (
               <div className="space-y-8">
+                {/* Summary Section */}
+                {result.analysis.summary && (
+                  <div className="bg-muted/50 p-6 rounded-lg">
+                    <h3 className="text-lg font-semibold mb-4">Summary</h3>
+                    <p className="text-muted-foreground mb-4">{result.analysis.summary.overview}</p>
+
+                    {result.analysis.summary.significantChanges.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-medium mb-2">Significant Changes</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {result.analysis.summary.significantChanges.map((change, index) => (
+                            <li key={index} className="text-sm">{change}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {result.analysis.summary.actionItems.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2">Action Items</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {result.analysis.summary.actionItems.map((item, index) => (
+                            <li key={index} className="text-sm">{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* BMI Analysis */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4">BMI Analysis</h3>
                   <div className="h-[120px] w-full">
@@ -393,32 +430,83 @@ export default function LabResultsPage() {
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
+                  {result.analysis.bmi.trend && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {result.analysis.bmi.trend.interpretation}
+                    </p>
+                  )}
                 </div>
 
+                {/* Test Analysis */}
                 {result.analysis.analysis && result.analysis.analysis.length > 0 && (
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Test Analysis</h3>
                     <div className="space-y-4">
                       {result.analysis.analysis.map((test, index) => (
                         <div key={index} className="border p-4 rounded-lg">
-                          <h4 className="font-semibold">{test.testName}</h4>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {test.purpose}
-                          </p>
-                          <p className="mt-2">
-                            <span className="font-medium">Result:</span>{" "}
-                            {test.result}
-                          </p>
-                          <p className="mt-1">
-                            <span className="font-medium">Interpretation:</span>{" "}
-                            {test.interpretation}
-                          </p>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-semibold">{test.testName}</h4>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {test.purpose}
+                              </p>
+                            </div>
+                            {test.severity && (
+                              <span className={`px-2 py-1 rounded text-sm ${getSeverityColor(test.severity)}`}>
+                                {test.severity}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="mt-4 space-y-2">
+                            <p>
+                              <span className="font-medium">Result:</span>{" "}
+                              <span className={getSeverityColor(test.severity)}>
+                                {test.result} {test.unit}
+                              </span>
+                              {test.normalRange && (
+                                <span className="text-sm text-muted-foreground ml-2">
+                                  (Normal range: {test.normalRange})
+                                </span>
+                              )}
+                            </p>
+
+                            <p>
+                              <span className="font-medium">Interpretation:</span>{" "}
+                              {test.interpretation}
+                            </p>
+
+                            {test.trend && (
+                              <div className="bg-muted/50 p-3 rounded mt-3">
+                                <p className="font-medium text-sm">Trend Analysis</p>
+                                <p className="text-sm mt-1">{test.trend.interpretation}</p>
+                                {test.trend.recommendation && (
+                                  <p className="text-sm mt-2 text-primary">
+                                    Recommendation: {test.trend.recommendation}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
+                {/* Recommendations */}
+                {result.analysis.recommendations && result.analysis.recommendations.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Recommendations</h3>
+                    <ul className="list-disc pl-5 space-y-2">
+                      {result.analysis.recommendations.map((recommendation, index) => (
+                        <li key={index}>{recommendation}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Questions for Medical Team */}
                 {result.analysis.questions && result.analysis.questions.length > 0 && (
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
