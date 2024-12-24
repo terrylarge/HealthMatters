@@ -111,7 +111,7 @@ export default function AuthPage() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 bg-[url('/images/health-background.svg')] bg-repeat bg-center">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">
