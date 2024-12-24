@@ -66,7 +66,7 @@ export default function AuthPage() {
         await login(data);
       }
       // Always redirect to health profile page after successful authentication
-      navigate("/profile");
+      navigate("/");
     } catch (error) {
       console.error('Auth error:', error);
       toast({
@@ -108,7 +108,6 @@ export default function AuthPage() {
       setIsResetting(false);
     }
   };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
