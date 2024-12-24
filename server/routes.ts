@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { db } from "@db";
 import { healthProfiles, labResults } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
@@ -12,7 +12,6 @@ import { PDFExtract } from "pdf.js-extract";
 import {randomUUID} from 'crypto';
 import { sendPasswordResetEmail } from './email';
 import { users, passwordResetTokens } from "@db/schema";
-
 
 const pdfExtract = new PDFExtract();
 const upload = multer({
@@ -133,7 +132,7 @@ export function registerRoutes(app: Express): Server {
       .select()
       .from(labResults)
       .where(eq(labResults.userId, req.user!.id))
-      .orderBy(labResults.uploadedAt);
+      .orderBy(desc(labResults.uploadedAt));
 
     res.json(results);
   });
