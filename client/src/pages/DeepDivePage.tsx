@@ -12,7 +12,7 @@ export default function DeepDivePage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 bg-red-50 p-4 rounded-md">
             <Shield className="h-6 w-6 text-primary mt-1" />
               <div>
                 <h2 className="text-xl font-semibold mb-2">Security and Privacy</h2>
@@ -26,7 +26,7 @@ export default function DeepDivePage() {
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 bg-green-50 p-4 rounded-md">
               <HeartPulse className="h-6 w-6 text-primary mt-1" />
               <div>
                 <h2 className="text-xl font-semibold mb-2">Your Healthcare Team</h2>
@@ -39,11 +39,16 @@ export default function DeepDivePage() {
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 bg-blue-50 p-4 rounded-md">
               <User className="h-6 w-6 text-primary mt-1" />
               <div>
                 <h2 className="text-xl font-semibold mb-2">About the Developer</h2>
                 <p className="text-muted-foreground">
+                  <img 
+                    src="./images/terry.jpeg" 
+                    alt="Developer" 
+                    className="w-32 h-auto float-left mr-4 mb-2 rounded-md shadow"
+                  />
                   Hi, I'm Terry Large, the developer behind Health Matters at Large.  I created 
                   this platform to help people gain insights in their health and offerimportant questions for
                   their medical team. I know from first hand experience the importance of early dectection. 
