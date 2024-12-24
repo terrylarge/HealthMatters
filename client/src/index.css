@@ -11,7 +11,8 @@
     @apply font-sans antialiased text-foreground;
     position: relative;
     min-height: 100vh;
-    background: none;
+    background: transparent;
+    z-index: 1;
   }
 
   /* Responsive background container */
@@ -27,8 +28,8 @@
     background-position: center;
     background-repeat: repeat;
     background-attachment: fixed;
-    opacity: 0.35;  /* Adjusted for better visibility while maintaining readability */
-    z-index: 0;
+    opacity: 0.15;  /* Lighter background for better visibility */
+    z-index: -1;
     pointer-events: none;  /* Ensures the background doesn't interfere with interactions */
 
     /* Responsive adjustments */
