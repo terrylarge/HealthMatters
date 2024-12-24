@@ -20,24 +20,6 @@ function App() {
     );
   }
 
-  // Handle loading state
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-border" />
-      </div>
-    );
-  }
-
-  // Handle loading state
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-border" />
-      </div>
-    );
-  }
-
   // Handle reset password page and Gmail redirects before authentication check
   const currentPath = window.location.pathname;
   const searchParams = new URLSearchParams(window.location.search);
@@ -54,8 +36,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
+    <div className="min-h-screen relative z-10">
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-20">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Button variant="ghost" asChild>
             <Link href="/deep-dive">Deep Dive Into</Link>
@@ -69,7 +51,7 @@ function App() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative z-10">
         <Switch>
           <Route path="/" component={HealthProfilePage} />
           <Route path="/lab-results" component={LabResultsPage} />
