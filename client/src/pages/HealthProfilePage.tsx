@@ -328,7 +328,7 @@ export default function HealthProfilePage() {
             />
 
             <Button type="submit" className="w-full">
-              Save and Continue
+              Save Health Profile and Continue to Lab Analysis Reporting
             </Button>
           </form>
         </Form>

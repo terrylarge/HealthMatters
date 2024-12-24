@@ -41,12 +41,6 @@ function App() {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <nav className="flex items-center space-x-4">
             <Button variant="ghost" asChild>
-              <Link href="/">Health Profile</Link>
-            </Button>
-            <Button variant="ghost" asChild>
-              <Link href="/lab-results">Lab Results</Link>
-            </Button>
-            <Button variant="ghost" asChild>
               <Link href="/deep-dive">Deep Dive</Link>
             </Button>
           </nav>
