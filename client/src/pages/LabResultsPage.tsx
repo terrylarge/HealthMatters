@@ -2,6 +2,7 @@ import { useHealthProfile } from "@/hooks/use-health-profile";
 import type { LabResult } from "@db/schema";
 import type { ReactElement } from "react";
 import { Link } from "wouter";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -224,6 +225,11 @@ const AnalysisPDF = ({ result }: { result: LabResult }): ReactElement => (
 
 export default function LabResultsPage() {
   const { profile, isLoading, uploadLabResults, isUploading, labResults } = useHealthProfile();
+
+  // Add useEffect to scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
