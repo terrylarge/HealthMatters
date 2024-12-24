@@ -29,17 +29,32 @@ export interface LabAnalysis {
   bmi: {
     score: number;
     category: string;
+    trend?: {
+      change: number;
+      interpretation: string;
+    };
   };
   analysis: Array<{
     testName: string;
     purpose: string;
     result: string;
     interpretation: string;
+    normalRange?: string;
+    unit?: string;
+    trend?: {
+      change: number;
+      interpretation: string;
+    };
+    historicalData?: Array<{
+      date: string;
+      value: number;
+    }>;
   }>;
   questions: string[];
+  recommendations?: string[];
 }
 
-export async function analyzePDFText(text: string, healthProfile: HealthProfileWithBMI): Promise<LabAnalysis> {
+export async function analyzePDFText(text: string, healthProfile: HealthProfileWithBMI, previousResults?: LabAnalysis[]): Promise<LabAnalysis> {
   if (!openai) {
     throw new Error("OpenAI client is not initialized. Please check your API key.");
   }
@@ -50,16 +65,21 @@ export async function analyzePDFText(text: string, healthProfile: HealthProfileW
       messages: [
         {
           role: "system",
-          content: "You are a medical data analyst specializing in laboratory result interpretation. Provide analysis in a clear, structured format following the exact JSON schema provided."
+          content: `You are a medical data analyst specializing in laboratory result interpretation with trend analysis capabilities. 
+          Analyze the results in context of the patient's profile and previous results if available.
+          Provide comprehensive analysis including trends, changes, and recommendations.`
         },
         {
           role: "user",
-          content: `Analyze these laboratory results and health profile data:
-          
+          content: `Analyze these laboratory results with historical context:
+
 Health Profile:
 ${JSON.stringify(healthProfile, null, 2)}
 
-Lab Results:
+${previousResults ? `Previous Results:
+${JSON.stringify(previousResults, null, 2)}` : ''}
+
+Current Lab Results:
 ${text}
 
 Return a JSON object with exactly this structure:
@@ -67,17 +87,34 @@ Return a JSON object with exactly this structure:
   "date": "YYYY-MM-DD",
   "bmi": {
     "score": number,
-    "category": string
+    "category": string,
+    "trend": {
+      "change": number,
+      "interpretation": string
+    }
   },
   "analysis": [
     {
       "testName": string,
       "purpose": string,
       "result": string,
-      "interpretation": string
+      "interpretation": string,
+      "normalRange": string,
+      "unit": string,
+      "trend": {
+        "change": number,
+        "interpretation": string
+      },
+      "historicalData": [
+        {
+          "date": string,
+          "value": number
+        }
+      ]
     }
   ],
-  "questions": string[]
+  "questions": string[],
+  "recommendations": string[]
 }`
         }
       ],
@@ -93,7 +130,7 @@ Return a JSON object with exactly this structure:
     let analysis: LabAnalysis;
     try {
       analysis = JSON.parse(response.choices[0].message.content);
-      
+
       // Validate the structure
       if (!analysis.date || !analysis.analysis || !Array.isArray(analysis.analysis) || !analysis.questions || !Array.isArray(analysis.questions)) {
         throw new Error("Invalid response structure from OpenAI");
@@ -102,7 +139,8 @@ Return a JSON object with exactly this structure:
       // Ensure BMI data is present
       analysis.bmi = {
         score: healthProfile.bmi,
-        category: healthProfile.bmiCategory
+        category: healthProfile.bmiCategory,
+        trend: analysis.bmi?.trend
       };
 
       return analysis;

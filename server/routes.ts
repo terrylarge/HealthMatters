@@ -163,6 +163,13 @@ export function registerRoutes(app: Express): Server {
       const data = await pdfExtract.extract(req.file.path);
       const pdfText = data.pages.map(page => page.content.map(item => item.str).join(" ")).join("\n");
 
+      // Get previous lab results for trend analysis
+      const previousResults = await db
+        .select()
+        .from(labResults)
+        .where(eq(labResults.userId, req.user!.id))
+        .orderBy(labResults.uploadedAt); // Assuming 'uploadedAt' is available
+
       // Calculate BMI
       const bmi = calculateBMI(profile.weightPounds, profile.heightFeet, profile.heightInches);
       const bmiCategory = getBMICategory(bmi);
@@ -174,8 +181,16 @@ export function registerRoutes(app: Express): Server {
         bmiCategory,
       };
 
-      // Analyze the PDF text with OpenAI
-      const analysis = await analyzePDFText(pdfText, healthProfile);
+      // Analyze the PDF text with OpenAI, including previous results for trend analysis
+      const analysis = await analyzePDFText(
+        pdfText, 
+        healthProfile,
+        previousResults.map(r => r.analysis).filter(Boolean)
+      );
+
+      // Extract test date from the PDF or analysis.  This is a guess,  you'll need to adapt based on your analysis structure.
+      const testDate = new Date(); // Default to current date if no date is found in analysis
+
 
       // Save the results
       const [result] = await db
@@ -183,6 +198,7 @@ export function registerRoutes(app: Express): Server {
         .values({
           userId: req.user!.id,
           pdfPath: req.file.path,
+          testDate,
           analysis,
         })
         .returning();
