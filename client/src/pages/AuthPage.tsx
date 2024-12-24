@@ -57,7 +57,7 @@ export default function AuthPage() {
   });
 
   const [, navigate] = useLocation();
-  
+
   const onSubmit = async (data: AuthFormData) => {
     try {
       if (isRegister) {
@@ -66,7 +66,7 @@ export default function AuthPage() {
         await login(data);
       }
       // Always redirect to health profile page after successful authentication
-      navigate("/");
+      navigate("/profile");
     } catch (error) {
       console.error('Auth error:', error);
       toast({
@@ -226,8 +226,8 @@ export default function AuthPage() {
                           </FormItem>
                         )}
                       />
-                      <Button 
-                        type="submit" 
+                      <Button
+                        type="submit"
                         className="w-full"
                         disabled={isResetting}
                       >

@@ -39,9 +39,17 @@ function App() {
     <div className="min-h-screen relative z-10">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-20">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Button variant="ghost" asChild>
-            <Link href="/deep-dive">Deep Dive Into</Link>
-          </Button>
+          <nav className="flex items-center space-x-4">
+            <Button variant="ghost" asChild>
+              <Link href="/">Health Profile</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+              <Link href="/lab-results">Lab Results</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+              <Link href="/deep-dive">Deep Dive</Link>
+            </Button>
+          </nav>
           <h1 className="text-2xl font-bold text-primary absolute left-1/2 transform -translate-x-1/2">
             Health Matters at Large
           </h1>
@@ -65,7 +73,7 @@ function App() {
                   <h1 className="text-2xl font-bold text-gray-900">404 Page Not Found</h1>
                 </div>
                 <p className="mt-4 text-sm text-gray-600">
-                  Return to your <a href="/" className="text-primary hover:underline">health profile</a>.
+                  Return to your <Link href="/" className="text-primary hover:underline">health profile</Link>.
                 </p>
               </CardContent>
             </Card>
