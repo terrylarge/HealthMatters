@@ -50,8 +50,8 @@ export default function DeepDivePage() {
                     className="w-32 h-auto float-left mr-4 mb-2 rounded-md shadow"
                   />
                   Hi, I'm Terry Large, the developer behind Health Matters at Large.  I created 
-                  this platform to help people gain insights in their health and offerimportant questions for
-                  their medical team. I know from first hand experience the importance of early dectection. 
+                  this platform to help people like you gain insights in their health and offer questions to 
+                  their medical team. Questions based on your health profile and lab results. I know from first hand experience the importance of early dectection. 
                   For me it was both early detection of my bladder cancer and getting quaility treatment which 
                   led to the my full remission.  
                 </p>

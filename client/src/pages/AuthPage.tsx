@@ -110,8 +110,10 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/LabTesting.jpg')"}}
+      >
+      <Card className="w-full max-w-md bg-blue-50">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">
             Health Matters at Large
