@@ -53,11 +53,12 @@ export default function DeepDivePage() {
                   this platform to help people like you gain insights in their health and offer questions to 
                   their medical team. Questions based on your health profile and lab results. I know from first hand experience the importance of early dectection. 
                   For me it was both early detection of my bladder cancer and getting quaility treatment which 
-                  led to the my full remission.  
+                  led to the my full remission. 
                 </p>
               </div>
             </div>
           </div>
+          <a href="mailto:terry.large@icloud.com">Click this line to email me if you have questions or suggestions</a>
 
           <div className="pt-4">
             <Button asChild>
