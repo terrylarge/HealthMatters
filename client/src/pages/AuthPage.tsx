@@ -120,6 +120,16 @@ export default function AuthPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="text-center mb-4">
+            <a 
+              href="https://terrylarge.com/health-matters-at-large" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-500 underline hover:text-blue-700"
+            >
+              Learn About Health Matters at Large
+            </a>
+          </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
